@@ -104,7 +104,7 @@ class loginActivity : AppCompatActivity() {
             progressDialog?.setMessage("Logowanie prosze czekac..")
             progressDialog?.show()
             mAuth!!.signInWithEmailAndPassword(email, pass)
-                    ?.addOnCompleteListener(this) { task ->
+                    .addOnCompleteListener(this) { task ->
                         progressDialog?.dismiss()
                         if (task.isSuccessful) {
                             startActivity(Intent(this@loginActivity, HomeActivity::class.java))
