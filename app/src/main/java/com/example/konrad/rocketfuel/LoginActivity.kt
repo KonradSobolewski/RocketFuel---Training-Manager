@@ -63,6 +63,13 @@ class LoginActivity : AppCompatActivity() {
         mDatabase = FirebaseDatabase.getInstance().reference
         mAuth = FirebaseAuth.getInstance()
 
+        val isRegisterDone: Boolean = intent.getBooleanExtra("registerFinishedFlag",
+                false)
+
+        if (isRegisterDone) {
+            Toast.makeText(this, "Register succeeded", Toast.LENGTH_SHORT).show()
+        }
+
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -75,7 +82,7 @@ class LoginActivity : AppCompatActivity() {
 
 
         registerText?.setOnClickListener({
-            register(emailText?.text.toString().trim(), passwordText?.text.toString().trim())
+            startActivity(Intent(this, RegisterActivity::class.java))
         })
 
         loginBtn?.setOnClickListener({
@@ -110,25 +117,6 @@ class LoginActivity : AppCompatActivity() {
                             finish()
                         } else {
                             Toast.makeText(this@LoginActivity, "Błędne dane logowania", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-        }
-    }
-
-    private fun register(email: String, pass: String) {
-        if (TextUtils.isEmpty(email) || TextUtils.isEmpty(pass)) {
-            Toast.makeText(this, "Błędne dane", Toast.LENGTH_SHORT).show()
-            return
-        } else {
-            progressDialog?.setMessage("Rejestracja prosze czekac...")
-            progressDialog?.show()
-            mAuth?.createUserWithEmailAndPassword(email, pass)
-                    ?.addOnCompleteListener(this) { task ->
-                        progressDialog?.dismiss()
-                        if (task.isSuccessful) {
-                            Toast.makeText(this, "Możesz sie zalogwać!", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Toast.makeText(this, "Błędne dane", Toast.LENGTH_SHORT).show()
                         }
                     }
         }

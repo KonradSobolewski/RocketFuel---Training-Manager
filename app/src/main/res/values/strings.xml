@@ -9,4 +9,13 @@
     <string name="login">Login</string>
     <string name="logout">Logout</string>
     <string name="register">Register here</string>
+
+    <!--Register activity-->
+    <string name="userNameTxt">Name</string>
+    <string name="userSurnameTxt">Surname</string>
+    <string name="passwordTxt">Password</string>
+    <string name="confirmPasswordTxt">Confirm password</string>
+    <string name="registerBtn">Register</string>
+    <string name="emailTxt">E-mail</string>
+
 </resources>
