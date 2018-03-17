@@ -104,10 +104,10 @@ class LoginActivity : AppCompatActivity() {
 
     private fun login(email: String, pass: String) {
         if (TextUtils.isEmpty(email) || TextUtils.isEmpty(pass)) {
-            Toast.makeText(this, "Błędne dane", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Incorrect credentials", Toast.LENGTH_SHORT).show()
             return
         } else {
-            progressDialog?.setMessage("Logowanie prosze czekac..")
+            progressDialog?.setMessage("Logging in...")
             progressDialog?.show()
             mAuth!!.signInWithEmailAndPassword(email, pass)
                     .addOnCompleteListener(this) { task ->
