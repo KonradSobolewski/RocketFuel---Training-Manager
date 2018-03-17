@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.text.TextUtils
-import android.util.Log
 import android.widget.*
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -24,7 +23,7 @@ import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_login.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
-class loginActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity() {
 
     private var animationDrawable: AnimationDrawable? = null
 
@@ -107,10 +106,10 @@ class loginActivity : AppCompatActivity() {
                     .addOnCompleteListener(this) { task ->
                         progressDialog?.dismiss()
                         if (task.isSuccessful) {
-                            startActivity(Intent(this@loginActivity, HomeActivity::class.java))
+                            startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
                             finish()
                         } else {
-                            Toast.makeText(this@loginActivity, "Błędne dane logowania", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@LoginActivity, "Błędne dane logowania", Toast.LENGTH_SHORT).show()
                         }
                     }
         }

@@ -1,12 +1,8 @@
 package com.example.konrad.rocketfuel
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
-import android.support.v4.app.ActivityCompat
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
@@ -35,7 +31,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mListener = FirebaseAuth.AuthStateListener { auth ->
             val user = auth.currentUser
             if(user ==  null) {
-                val loginIntent = Intent(this, loginActivity::class.java)
+                val loginIntent = Intent(this, LoginActivity::class.java)
                 startActivity(loginIntent)
                 finish()
             }
@@ -108,7 +104,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun signOut():Boolean{
         FirebaseAuth.getInstance().signOut()
-        startActivity(Intent(this@HomeActivity, loginActivity::class.java))
+        startActivity(Intent(this@HomeActivity, LoginActivity::class.java))
         finish()
         return true
     }
