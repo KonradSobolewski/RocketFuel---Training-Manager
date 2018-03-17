@@ -38,7 +38,7 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-        //Set persmissions
+        //Set permissions
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.INTERNET)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(
@@ -93,7 +93,7 @@ class LoginActivity : AppCompatActivity() {
             signIn()
         })
 
-        animationDrawable = relativeLayout?.getBackground() as AnimationDrawable
+        animationDrawable = relativeLayout?.background as AnimationDrawable
 
         animationDrawable?.setEnterFadeDuration(4500)
         animationDrawable?.setExitFadeDuration(4500)
