@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.text.TextUtils
+import android.util.Log
 import android.widget.*
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -22,12 +23,18 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_login.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.DatabaseReference
+
+
 
 class LoginActivity : AppCompatActivity() {
 
     private var animationDrawable: AnimationDrawable? = null
 
-    private var mDatabase: DatabaseReference? = null
+    private var dbRef: DatabaseReference? = null
     private var mAuth: FirebaseAuth? = null
 
     private val RC_SIGN_IN = 1
@@ -60,7 +67,7 @@ class LoginActivity : AppCompatActivity() {
             )
         }
 
-        mDatabase = FirebaseDatabase.getInstance().reference
+        dbRef = FirebaseDatabase.getInstance().reference.child("Users")
         mAuth = FirebaseAuth.getInstance()
 
         val isRegisterDone: Boolean = intent.getBooleanExtra("registerFinishedFlag",
@@ -152,10 +159,33 @@ class LoginActivity : AppCompatActivity() {
                 ?.addOnCompleteListener(this) { task->
                     progressDialog?.dismiss()
                     if(task.isSuccessful) {
+                        val userId: String? = mAuth!!.currentUser!!.uid
+                        val acct = GoogleSignIn.getLastSignedInAccount(this)
+                        dbRef!!.addValueEventListener(object : ValueEventListener{
+                            override fun onCancelled(p0: DatabaseError?) {
+                                Log.e("Logout", "error!")
+                            }
+
+                            override fun onDataChange(p0: DataSnapshot?) {
+                                if(!p0!!.hasChild(userId)){
+                                    if (acct != null ) {
+                                        val databaseRef2: DatabaseReference = dbRef!!.child(userId)
+                                        val personName = acct.givenName
+                                        val personFamilyName = acct.familyName
+                                        val personEmail = acct.email
+                                        databaseRef2.child("Name").setValue(personName)
+                                        databaseRef2.child("Surname").setValue(personFamilyName)
+                                        databaseRef2.child("Email").setValue(personEmail)
+                                        databaseRef2.push()
+                                    }
+                                }
+                            }
+                        })
+
                         startActivity(Intent(this, HomeActivity::class.java))
                         finish()
                     }else{
-                        Toast.makeText(this, "Błęd połączenia", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Connection error", Toast.LENGTH_SHORT).show()
                     }
                 }
     }
