@@ -8,11 +8,13 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import com.example.konrad.rocketfuel.Adapters.MyFragmentAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.app_bar_home.*
+import kotlinx.android.synthetic.main.content_home.*
 
 class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -36,6 +38,10 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 finish()
             }
         }
+        //Add adapter to pageView
+        val myFragAdapter = MyFragmentAdapter(supportFragmentManager,this)
+        homeViewPager.adapter = myFragAdapter
+        homeTab.setupWithViewPager(homeViewPager)
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -56,6 +62,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             drawer_layout.closeDrawer(GravityCompat.START)
         } else {
             super.onBackPressed()
+            finish()
         }
     }
 
@@ -102,7 +109,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    fun signOut():Boolean{
+    private fun signOut():Boolean{
         FirebaseAuth.getInstance().signOut()
         startActivity(Intent(this@HomeActivity, LoginActivity::class.java))
         finish()
