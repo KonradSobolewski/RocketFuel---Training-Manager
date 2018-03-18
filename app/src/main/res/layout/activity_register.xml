@@ -16,7 +16,7 @@
         android:layout_alignParentTop="true"
         android:layout_margin="15dp"
         android:ems="10"
-        android:drawableLeft="@drawable/ic_login_user"
+        android:drawableStart="@drawable/ic_login_user"
         android:hint="@string/userNameTxt"
         android:inputType="textPersonName"
         android:padding="10dp" />
@@ -28,7 +28,7 @@
         android:layout_below="@+id/registerUserNameTxt"
         android:layout_margin="15dp"
         android:ems="10"
-        android:drawableLeft="@drawable/ic_login_user"
+        android:drawableStart="@drawable/ic_login_user"
         android:hint="@string/userSurnameTxt"
         android:inputType="textPersonName"
         android:padding="10dp" />
@@ -40,7 +40,7 @@
         android:layout_alignParentEnd="true"
         android:layout_below="@+id/registerEmailTxt"
         android:ems="10"
-        android:drawableLeft="@drawable/ic_password"
+        android:drawableStart="@drawable/ic_password"
         android:hint="@string/passwordTxt"
         android:inputType="textPassword"
         android:padding="10dp"
@@ -54,7 +54,7 @@
         android:layout_below="@+id/registerPasswordTxt"
         android:layout_margin="15dp"
         android:ems="10"
-        android:drawableLeft="@drawable/ic_password"
+        android:drawableStart="@drawable/ic_password"
         android:hint="@string/confirmPasswordTxt"
         android:inputType="textPassword"
         android:padding="10dp" />
@@ -69,7 +69,7 @@
         android:ems="10"
         android:hint="@string/emailTxt"
         android:inputType="textEmailAddress"
-        android:drawableLeft="@drawable/ic_email_register"
+        android:drawableStart="@drawable/ic_email_register"
         android:padding="10dp" />
 
     <Button
@@ -81,4 +81,13 @@
         android:layout_marginBottom="35dp"
         android:background="@drawable/btn_login"
         android:text="@string/registerBtn" />
+
+    <ProgressBar
+        android:id="@+id/registerProgressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/registerConfirmPasswordTxt"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone" />
 </RelativeLayout>

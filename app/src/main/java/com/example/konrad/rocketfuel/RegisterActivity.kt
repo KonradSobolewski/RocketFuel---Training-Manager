@@ -7,6 +7,8 @@ import android.graphics.drawable.AnimationDrawable
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
+import android.view.View
+import android.widget.ProgressBar
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -15,10 +17,11 @@ import kotlinx.android.synthetic.main.activity_register.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
 class RegisterActivity : AppCompatActivity() {
-    private var progressDialog: ProgressDialog? = null
     private var mAuth: FirebaseAuth? = null
     private var dbRef: DatabaseReference? = null
     private var animationDrawable: AnimationDrawable? = null
+    private var progressBar: ProgressBar? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
@@ -37,8 +40,7 @@ class RegisterActivity : AppCompatActivity() {
         animationDrawable?.setExitFadeDuration(4500)
         animationDrawable?.start()
 
-        progressDialog = ProgressDialog(this)
-
+        progressBar = this.registerProgressBar
     }
 
     private fun register(userName: String, userSurname: String, email: String, pass: String,
@@ -54,8 +56,7 @@ class RegisterActivity : AppCompatActivity() {
             return
         }
         else {
-            progressDialog?.setMessage("Registering...")
-            progressDialog?.show()
+            progressBar!!.visibility = View.VISIBLE
             mAuth?.createUserWithEmailAndPassword(email, pass)
                     ?.addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
@@ -65,12 +66,11 @@ class RegisterActivity : AppCompatActivity() {
                             userIdRef.child("Surname").setValue(userSurname)
                             userIdRef.child("Email").setValue(email)
                             userIdRef.push()
-                            progressDialog?.dismiss()
                             startActivity(Intent(this, LoginActivity::class.java)
                                     .putExtra("registerFinishedFlag", true))
                             finish()
                         } else {
-                            progressDialog?.dismiss()
+                            progressBar!!.visibility = View.GONE
                             Toast.makeText(
                                     this, "Account creating failed", Toast.LENGTH_SHORT
                             ).show()

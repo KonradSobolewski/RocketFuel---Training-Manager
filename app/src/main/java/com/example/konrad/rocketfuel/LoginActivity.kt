@@ -1,7 +1,6 @@
 package com.example.konrad.rocketfuel
 
 import android.Manifest
-import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -11,6 +10,7 @@ import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.text.TextUtils
 import android.util.Log
+import android.view.View
 import android.widget.*
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -39,7 +39,7 @@ class LoginActivity : AppCompatActivity() {
     private val RC_SIGN_IN = 1
     private var mGoogleApiClient: GoogleApiClient? = null
 
-    private var progressDialog: ProgressDialog? = null
+    private var progressBar: ProgressBar? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,7 +88,7 @@ class LoginActivity : AppCompatActivity() {
                     ).show()
                 }.addApi(Auth.GOOGLE_SIGN_IN_API, gso).build()
 
-
+        progressBar = this.loginProgressBar
         registerText?.setOnClickListener({
             startActivity(Intent(this, RegisterActivity::class.java))
         })
@@ -106,8 +106,6 @@ class LoginActivity : AppCompatActivity() {
         animationDrawable?.setEnterFadeDuration(4500)
         animationDrawable?.setExitFadeDuration(4500)
         animationDrawable?.start()
-
-        progressDialog = ProgressDialog(this)
     }
 
     private fun login(email: String, pass: String) {
@@ -115,12 +113,11 @@ class LoginActivity : AppCompatActivity() {
             Toast.makeText(this, "Incorrect credentials", Toast.LENGTH_SHORT).show()
             return
         } else {
-            progressDialog?.setMessage("Logging in...")
-            progressDialog?.show()
+            progressBar!!.visibility = View.VISIBLE
             mAuth!!.signInWithEmailAndPassword(email, pass)
                     .addOnCompleteListener(this) { task ->
-                        progressDialog?.dismiss()
                         if (task.isSuccessful) {
+                            progressBar!!.visibility = View.GONE
                             startActivity(
                                     Intent(
                                     this@LoginActivity, HomeActivity::class.java
@@ -128,6 +125,7 @@ class LoginActivity : AppCompatActivity() {
                             )
                             finish()
                         } else {
+                            progressBar!!.visibility = View.GONE
                             Toast.makeText(this@LoginActivity,
                                     "Incorrect credentials", Toast.LENGTH_SHORT).show()
                         }
@@ -136,10 +134,10 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun signIn() {
-        progressDialog?.setMessage("Logging in...")
-        progressDialog?.show()
+        progressBar!!.visibility = View.VISIBLE
         val signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient)
         startActivityForResult(signInIntent, RC_SIGN_IN)
+        progressBar!!.visibility = View.GONE
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -152,7 +150,6 @@ class LoginActivity : AppCompatActivity() {
                 val account = task.getResult(ApiException::class.java)
                 firebaseAuthWithGoogle(account)
             } catch (e: ApiException) {
-                progressDialog?.dismiss()
                 // Google Sign In failed, update UI appropriately
                 // ...
             }
@@ -163,7 +160,6 @@ class LoginActivity : AppCompatActivity() {
         val credential = GoogleAuthProvider.getCredential(account.idToken, null)
         mAuth?.signInWithCredential(credential)
                 ?.addOnCompleteListener(this) { task->
-                    progressDialog?.dismiss()
                     if(task.isSuccessful) {
                         val userId: String? = mAuth!!.currentUser!!.uid
                         val acct = GoogleSignIn.getLastSignedInAccount(this)
