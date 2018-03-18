@@ -15,7 +15,8 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="55dp"
-        app:srcCompat="@drawable/profile_ic" />
+        app:srcCompat="@drawable/profile_ic"
+        android:contentDescription="@string/photoContentDescription"/>
 
 
     <EditText
@@ -25,10 +26,10 @@
         android:layout_alignBottom="@+id/passwordText"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="110dp"
-        android:drawableLeft="@drawable/ic_login_user"
+        android:drawableStart="@drawable/ic_login_user"
         android:ems="10"
-        android:hint="Email"
-        android:inputType="textPersonName" />
+        android:hint="@string/emailTxt"
+        android:inputType="textEmailAddress" />
 
     <EditText
         android:id="@+id/passwordText"
@@ -37,9 +38,9 @@
         android:layout_above="@+id/loginBtn"
         android:layout_alignStart="@+id/emailText"
         android:layout_marginBottom="80dp"
-        android:drawableLeft="@drawable/ic_password"
+        android:drawableStart="@drawable/ic_password"
         android:ems="10"
-        android:hint="Password"
+        android:hint="@string/passwordTxt"
         android:inputType="textPassword" />
 
     <Button

@@ -29,7 +29,6 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.DatabaseReference
 
 
-
 class LoginActivity : AppCompatActivity() {
 
     private var animationDrawable: AnimationDrawable? = null
@@ -84,7 +83,9 @@ class LoginActivity : AppCompatActivity() {
 
         mGoogleApiClient = GoogleApiClient.Builder(applicationContext)
                 .enableAutoManage(this) {
-                    Toast.makeText(this, "Google connection failed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                            this, "Google connection failed", Toast.LENGTH_SHORT
+                    ).show()
                 }.addApi(Auth.GOOGLE_SIGN_IN_API, gso).build()
 
 
@@ -120,17 +121,22 @@ class LoginActivity : AppCompatActivity() {
                     .addOnCompleteListener(this) { task ->
                         progressDialog?.dismiss()
                         if (task.isSuccessful) {
-                            startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
+                            startActivity(
+                                    Intent(
+                                    this@LoginActivity, HomeActivity::class.java
+                                    )
+                            )
                             finish()
                         } else {
-                            Toast.makeText(this@LoginActivity, "Błędne dane logowania", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@LoginActivity,
+                                    "Incorrect credentials", Toast.LENGTH_SHORT).show()
                         }
                     }
         }
     }
 
     private fun signIn() {
-        progressDialog?.setMessage("Logowanie prosze czekać...")
+        progressDialog?.setMessage("Logging in...")
         progressDialog?.show()
         val signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient)
         startActivityForResult(signInIntent, RC_SIGN_IN)
@@ -185,12 +191,13 @@ class LoginActivity : AppCompatActivity() {
                         startActivity(Intent(this, HomeActivity::class.java))
                         finish()
                     }else{
-                        Toast.makeText(this, "Connection error", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Connection error", Toast.LENGTH_SHORT)
+                                .show()
                     }
                 }
     }
 
-    //Zmienia czcionke
+    //change font
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
     }
