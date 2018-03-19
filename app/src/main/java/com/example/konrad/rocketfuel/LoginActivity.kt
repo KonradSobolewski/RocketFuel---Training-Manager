@@ -106,6 +106,8 @@ class LoginActivity : AppCompatActivity() {
         animationDrawable?.setEnterFadeDuration(4500)
         animationDrawable?.setExitFadeDuration(4500)
         animationDrawable?.start()
+
+        progressBar = this.loginProgressBar
     }
 
     private fun login(email: String, pass: String) {
@@ -116,12 +118,13 @@ class LoginActivity : AppCompatActivity() {
             progressBar!!.visibility = View.VISIBLE
             mAuth!!.signInWithEmailAndPassword(email, pass)
                     .addOnCompleteListener(this) { task ->
+                        progressBar!!.visibility = View.GONE
                         if (task.isSuccessful) {
                             progressBar!!.visibility = View.GONE
                             startActivity(
                                     Intent(
                                     this@LoginActivity, HomeActivity::class.java
-                                    )
+                                    ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                             )
                             finish()
                         } else {
@@ -135,9 +138,9 @@ class LoginActivity : AppCompatActivity() {
 
     private fun signIn() {
         progressBar!!.visibility = View.VISIBLE
+
         val signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient)
         startActivityForResult(signInIntent, RC_SIGN_IN)
-        progressBar!!.visibility = View.GONE
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -150,6 +153,8 @@ class LoginActivity : AppCompatActivity() {
                 val account = task.getResult(ApiException::class.java)
                 firebaseAuthWithGoogle(account)
             } catch (e: ApiException) {
+                progressBar!!.visibility = View.GONE
+
                 // Google Sign In failed, update UI appropriately
                 // ...
             }
@@ -160,6 +165,8 @@ class LoginActivity : AppCompatActivity() {
         val credential = GoogleAuthProvider.getCredential(account.idToken, null)
         mAuth?.signInWithCredential(credential)
                 ?.addOnCompleteListener(this) { task->
+                    progressBar!!.visibility = View.GONE
+
                     if(task.isSuccessful) {
                         val userId: String? = mAuth!!.currentUser!!.uid
                         val acct = GoogleSignIn.getLastSignedInAccount(this)
@@ -184,7 +191,7 @@ class LoginActivity : AppCompatActivity() {
                             }
                         })
 
-                        startActivity(Intent(this, HomeActivity::class.java))
+                        startActivity(Intent(this, HomeActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
                         finish()
                     }else{
                         Toast.makeText(this, "Connection error", Toast.LENGTH_SHORT)
@@ -196,5 +203,10 @@ class LoginActivity : AppCompatActivity() {
     //change font
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
     }
 }

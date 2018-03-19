@@ -1,6 +1,5 @@
 package com.example.konrad.rocketfuel
 
-import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.AnimationDrawable
@@ -22,6 +21,7 @@ class RegisterActivity : AppCompatActivity() {
     private var animationDrawable: AnimationDrawable? = null
     private var progressBar: ProgressBar? = null
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
@@ -41,6 +41,7 @@ class RegisterActivity : AppCompatActivity() {
         animationDrawable?.start()
 
         progressBar = this.registerProgressBar
+
     }
 
     private fun register(userName: String, userSurname: String, email: String, pass: String,
@@ -57,6 +58,7 @@ class RegisterActivity : AppCompatActivity() {
         }
         else {
             progressBar!!.visibility = View.VISIBLE
+
             mAuth?.createUserWithEmailAndPassword(email, pass)
                     ?.addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
@@ -66,11 +68,14 @@ class RegisterActivity : AppCompatActivity() {
                             userIdRef.child("Surname").setValue(userSurname)
                             userIdRef.child("Email").setValue(email)
                             userIdRef.push()
+                            progressBar!!.visibility = View.GONE
+
                             startActivity(Intent(this, LoginActivity::class.java)
                                     .putExtra("registerFinishedFlag", true))
                             finish()
                         } else {
                             progressBar!!.visibility = View.GONE
+
                             Toast.makeText(
                                     this, "Account creating failed", Toast.LENGTH_SHORT
                             ).show()

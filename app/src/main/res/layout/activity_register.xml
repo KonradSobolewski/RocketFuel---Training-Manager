@@ -8,6 +8,7 @@
     android:id="@+id/registerLayout"
     tools:context="com.example.konrad.rocketfuel.RegisterActivity">
 
+
     <EditText
         android:id="@+id/registerUserNameTxt"
         android:layout_width="match_parent"
@@ -72,6 +73,7 @@
         android:drawableStart="@drawable/ic_email_register"
         android:padding="10dp" />
 
+
     <Button
         android:id="@+id/registerBtn"
         android:layout_width="wrap_content"
@@ -90,4 +92,5 @@
         android:layout_below="@+id/registerConfirmPasswordTxt"
         android:layout_centerHorizontal="true"
         android:visibility="gone" />
+
 </RelativeLayout>
