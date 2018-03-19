@@ -10,9 +10,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.konrad.rocketfuel.CategoryItem
+import com.example.konrad.rocketfuel.ExerciseDetailsActivity
 import com.example.konrad.rocketfuel.R
 import com.example.konrad.rocketfuel.ViewHolder.CategoryViewHolder
-import com.example.konrad.rocketfuel.ExerciseDetailsActivity
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.database.DatabaseReference

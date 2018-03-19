@@ -20,5 +20,6 @@
     <string name="confirmPasswordTxt">Confirm password</string>
     <string name="registerBtn">Register</string>
     <string name="emailTxt">E-mail</string>
+    <string name="title_activity_exercise_details">ExerciseDetailsActivity</string>
 
 </resources>

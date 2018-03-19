@@ -34,7 +34,10 @@
         <activity
             android:name=".RegisterActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity android:name=".ExerciseDetailsActivity"></activity>
+        <activity
+            android:name=".ExerciseDetailsActivity"
+            android:label="@string/title_activity_exercise_details"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
