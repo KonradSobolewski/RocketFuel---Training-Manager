@@ -191,9 +191,12 @@ class LoginActivity : AppCompatActivity() {
                             }
                         })
 
-                        startActivity(Intent(this, HomeActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+                        startActivity(
+                                Intent(this, HomeActivity::class.java)
+                                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        )
                         finish()
-                    }else{
+                    } else {
                         Toast.makeText(this, "Connection error", Toast.LENGTH_SHORT)
                                 .show()
                     }

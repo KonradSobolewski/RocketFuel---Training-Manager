@@ -1,5 +1,6 @@
 package com.example.konrad.rocketfuel.HomeFragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -11,6 +12,7 @@ import android.view.ViewGroup
 import com.example.konrad.rocketfuel.CategoryItem
 import com.example.konrad.rocketfuel.R
 import com.example.konrad.rocketfuel.ViewHolder.CategoryViewHolder
+import com.example.konrad.rocketfuel.ExerciseDetailsActivity
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.database.DatabaseReference
@@ -30,24 +32,36 @@ class CategoryFragment : Fragment() {
 
     private var recyclerView : RecyclerView? = null
 
-    private var mDatabaseReference : DatabaseReference? =  FirebaseDatabase.getInstance().reference.child("Category")
+    private var mDatabaseReference : DatabaseReference? =
+            FirebaseDatabase.getInstance().reference.child("Category")
 
     private var options : FirebaseRecyclerOptions<CategoryItem>? =
             FirebaseRecyclerOptions.Builder<CategoryItem>()
                     .setQuery(mDatabaseReference,CategoryItem::class.java)
                     .build()
 
-    private var mAdapter : FirebaseRecyclerAdapter<CategoryItem, CategoryViewHolder>? = object : FirebaseRecyclerAdapter<CategoryItem,CategoryViewHolder>(options){
+    private var mAdapter : FirebaseRecyclerAdapter<CategoryItem, CategoryViewHolder>? =
+            object : FirebaseRecyclerAdapter<CategoryItem,CategoryViewHolder>(options) {
+
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): CategoryViewHolder {
-            val mView : View? = LayoutInflater.from(parent?.context).inflate(R.layout.category_row,parent,false)
+            val mView : View? = LayoutInflater.from(parent?.context)
+                    .inflate(R.layout.category_row,parent,false)
             return CategoryViewHolder(mView!!)
         }
 
-        override fun onBindViewHolder(holder: CategoryViewHolder?, position: Int, model: CategoryItem?) {
+        override fun onBindViewHolder(holder: CategoryViewHolder?, position: Int,
+                                      model: CategoryItem?) {
             holder?.setTitle(model?.title!!)
             holder?.setDescritopn(model?.description!!)
             holder?.setImage(context, model?.image!!)
             Log.d("position", Integer.toString(position))
+
+            holder?.itemView?.setOnClickListener {
+                startActivity(
+                        Intent(activity, ExerciseDetailsActivity::class.java)
+                                .putExtra("title", model?.title!!)
+                )
+            }
         }
 
     }
@@ -59,7 +73,9 @@ class CategoryFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-        val view : View = inflater!!.inflate(R.layout.fragment_category, container, false)
+        val view : View = inflater!!.inflate(
+                R.layout.fragment_category, container, false
+        )
         val mLayoutManager = LinearLayoutManager(activity)
         recyclerView = view.findViewById(R.id.recycleCategory)
         recyclerView?.setHasFixedSize(true)
