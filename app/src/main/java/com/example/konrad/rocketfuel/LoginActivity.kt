@@ -120,14 +120,14 @@ class LoginActivity : AppCompatActivity() {
             mAuth!!.signInWithEmailAndPassword(email, pass)
                     .addOnCompleteListener(this) { task ->
                         progressBar!!.visibility = View.GONE
-                        if (!mAuth!!.currentUser!!.isEmailVerified) {
-                            Toast.makeText(
-                                    this@LoginActivity, "Please verify your email",
-                                    Toast.LENGTH_SHORT
-                            ).show()
-                            return@addOnCompleteListener
-                        }
                         if (task.isSuccessful) {
+                            if (!mAuth!!.currentUser!!.isEmailVerified) {
+                                Toast.makeText(
+                                        this@LoginActivity, "Please verify your email",
+                                        Toast.LENGTH_SHORT
+                                ).show()
+                                return@addOnCompleteListener
+                            }
                             startActivity(
                                     Intent(
                                     this@LoginActivity, HomeActivity::class.java
