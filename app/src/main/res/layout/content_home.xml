@@ -17,6 +17,9 @@
 
         <android.support.design.widget.TabLayout
             android:id="@+id/homeTab"
+            style="@style/AppTabLayout"
+            app:tabTextAppearance="@style/AppTabTextAppearance"
+            android:background="@drawable/tablayout_item"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 

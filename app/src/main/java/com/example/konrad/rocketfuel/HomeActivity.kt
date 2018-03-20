@@ -1,13 +1,17 @@
 package com.example.konrad.rocketfuel
 
 import android.content.Intent
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.support.design.widget.NavigationView
+import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.LinearLayout
 import com.example.konrad.rocketfuel.Adapters.MyFragmentAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -42,6 +46,15 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val myFragAdapter = MyFragmentAdapter(supportFragmentManager,this)
         homeViewPager.adapter = myFragAdapter
         homeTab.setupWithViewPager(homeViewPager)
+        val root : View = homeTab.getChildAt(0);
+        if( root is LinearLayout ){
+            root.showDividers  = LinearLayout.SHOW_DIVIDER_MIDDLE
+            val drawable = GradientDrawable()
+            drawable.setColor(ContextCompat.getColor(this, R.color.colorWhite))
+            drawable.setSize(3,2)
+            root.dividerPadding = 10;
+            root.dividerDrawable = drawable
+        }
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open,

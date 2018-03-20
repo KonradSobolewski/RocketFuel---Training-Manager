@@ -22,4 +22,11 @@
     <string name="emailTxt">E-mail</string>
     <string name="title_activity_exercise_details">ExerciseDetailsActivity</string>
 
+
+    <!--Upload Exercise Activity-->
+    <string name="title">Title…</string>
+    <string name="description">Description…</string>
+    <string name="coach">Coach prompts…</string>
+    <string name="upload">Upload</string>
+
 </resources>

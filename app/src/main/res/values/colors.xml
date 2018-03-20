@@ -16,4 +16,5 @@
 
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorTransparentWhite">#CCCCCC</color>
+    <color name="tabHighlightColor">#fbffd3</color>
 </resources>
