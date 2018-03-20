@@ -68,6 +68,11 @@ class RegisterActivity : AppCompatActivity() {
                             userIdRef.child("Surname").setValue(userSurname)
                             userIdRef.child("Email").setValue(email)
                             userIdRef.push()
+
+                            mAuth!!.currentUser!!.sendEmailVerification()
+                            Toast.makeText(
+                                    this, "Verification email sent", Toast.LENGTH_SHORT
+                            ).show()
                             progressBar!!.visibility = View.GONE
 
                             startActivity(Intent(this, LoginActivity::class.java)

@@ -114,13 +114,20 @@ class LoginActivity : AppCompatActivity() {
         if (TextUtils.isEmpty(email) || TextUtils.isEmpty(pass)) {
             Toast.makeText(this, "Incorrect credentials", Toast.LENGTH_SHORT).show()
             return
-        } else {
+        }
+        else {
             progressBar!!.visibility = View.VISIBLE
             mAuth!!.signInWithEmailAndPassword(email, pass)
                     .addOnCompleteListener(this) { task ->
                         progressBar!!.visibility = View.GONE
+                        if (!mAuth!!.currentUser!!.isEmailVerified) {
+                            Toast.makeText(
+                                    this@LoginActivity, "Please verify your email",
+                                    Toast.LENGTH_SHORT
+                            ).show()
+                            return@addOnCompleteListener
+                        }
                         if (task.isSuccessful) {
-                            progressBar!!.visibility = View.GONE
                             startActivity(
                                     Intent(
                                     this@LoginActivity, HomeActivity::class.java
@@ -128,9 +135,10 @@ class LoginActivity : AppCompatActivity() {
                             )
                             finish()
                         } else {
-                            progressBar!!.visibility = View.GONE
-                            Toast.makeText(this@LoginActivity,
-                                    "Incorrect credentials", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                    this@LoginActivity, "Incorrect credentials",
+                                    Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
         }
