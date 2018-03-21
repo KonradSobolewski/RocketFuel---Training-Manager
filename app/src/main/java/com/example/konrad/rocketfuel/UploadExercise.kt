@@ -10,8 +10,10 @@ import android.widget.Toast
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import kotlinx.android.synthetic.main.activity_home.*
 import dmax.dialog.SpotsDialog
 import kotlinx.android.synthetic.main.activity_upload_exercise.*
+import kotlinx.android.synthetic.main.nav_header_home.view.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import java.text.SimpleDateFormat
 import java.util.*
@@ -55,30 +57,53 @@ class UploadExercise : AppCompatActivity() {
         val desc_val = uploadDescription.text.toString().trim()
         val prompts_val = coachPromptUpload.text.toString().trim()
         categoryIdSelect = spinner.text.toString()
+
+        val dbRefCategory: DatabaseReference = mDatabaseReference!!.child(categoryIdSelect)
+        dbRefCategory.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError?) {
+                println(error!!.message)
+            }
+            override fun onDataChange(snapshot: DataSnapshot?) {
+                if(snapshot!!.hasChild(title_val)) {
+                    Toast.makeText(
+                            this@UploadExercise, "Exercise exists", Toast.LENGTH_SHORT
+                    ).show()
+                }
+                else {
+                    postData(title_val, desc_val, prompts_val, dbRefCategory.child(title_val))
+                }
+            }
+        })
+
+    }
+
+    private fun postData(title: String, description: String, hints: String,
+                         dbRef: DatabaseReference) {
         spotsDialog?.show()
-        if (!TextUtils.isEmpty(title_val) && !TextUtils.isEmpty(desc_val) && !TextUtils.isEmpty(prompts_val) && imgUrl != null) {
-            val filePath = mStorageReference!!.child("Exercises_img").child(imgUrl!!.lastPathSegment)
+        if (!TextUtils.isEmpty(title) && !TextUtils.isEmpty(description)
+                && !TextUtils.isEmpty(hints) && imgUrl != null) {
+            val filePath = mStorageReference!!.child("Exercises_img")
+                    .child(imgUrl!!.lastPathSegment)
             filePath.putFile(imgUrl!!).addOnSuccessListener { taskSnapshot ->
-                val dateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
+                val dateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.ENGLISH)
                 val date = Date()
                 val downloadUrl = taskSnapshot.downloadUrl
-                val newPost = mDatabaseReference!!.child(categoryIdSelect).child(title_val)
-                newPost.child("title").setValue(title_val)
-                newPost.child("description").setValue(desc_val)
-                newPost.child("prompts").setValue(prompts_val)
-                newPost.child("timestamp").setValue(dateFormat.format(date).toString())
-                newPost.child("image").setValue(downloadUrl!!.toString())
-                newPost.push()
+                dbRef.child("title").setValue(title)
+                dbRef.child("description").setValue(description)
+                dbRef.child("prompts").setValue(hints)
+                dbRef.child("timestamp").setValue(dateFormat.format(date).toString())
+                dbRef.child("image").setValue(downloadUrl!!.toString())
+                dbRef.push()
+
                 spotsDialog?.dismiss()
                 startActivity(Intent(this, HomeActivity::class.java)
-                        .putExtra("title", title_val))
+                        .putExtra("title", title))
                 finish()
             }
-        }else{
+        } else {
             spotsDialog?.dismiss()
             Toast.makeText(this,"Complete all fields", Toast.LENGTH_SHORT).show()
         }
-
     }
 
     private fun loadCategoryToSpinner(){

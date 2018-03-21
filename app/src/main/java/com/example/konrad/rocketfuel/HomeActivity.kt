@@ -53,13 +53,13 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val myFragAdapter = MyFragmentAdapter(supportFragmentManager,this)
         homeViewPager.adapter = myFragAdapter
         homeTab.setupWithViewPager(homeViewPager)
-        val root : View = homeTab.getChildAt(0);
+        val root : View = homeTab.getChildAt(0)
         if( root is LinearLayout ){
             root.showDividers  = LinearLayout.SHOW_DIVIDER_MIDDLE
             val drawable = GradientDrawable()
             drawable.setColor(ContextCompat.getColor(this, R.color.colorWhite))
             drawable.setSize(3,2)
-            root.dividerPadding = 10;
+            root.dividerPadding = 10
             root.dividerDrawable = drawable
         }
 
@@ -127,6 +127,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             R.id.nav_exercise -> {
                 startActivity(Intent(this,UploadExercise::class.java))
+                finish()
             }
             R.id.nav_gallery -> {
 

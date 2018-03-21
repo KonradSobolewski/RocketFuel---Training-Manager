@@ -44,7 +44,7 @@
     <!--For SpotsDialog-->
     <style name="DialogStyle" parent="android:Theme.DeviceDefault.Dialog">
         <item name="DialogTitleAppearance">@android:style/TextAppearance.Medium</item>
-        <item name="DialogTitleText">Updating…</item>
+        <item name="DialogTitleText">Uploading…</item>
         <item name="DialogSpotColor">@android:color/holo_orange_dark</item>
         <item name="DialogSpotCount">4</item>
     </style>
