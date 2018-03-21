@@ -1,6 +1,5 @@
 package com.example.konrad.rocketfuel
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
@@ -11,7 +10,6 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.activity_upload_exercise.*
 import kotlin.collections.ArrayList
-
 
 class UploadExercise : AppCompatActivity() {
 
@@ -53,18 +51,17 @@ class UploadExercise : AppCompatActivity() {
             filePath.putFile(imgUrl!!).addOnSuccessListener { taskSnapshot ->
                 val downloadUrl = taskSnapshot.downloadUrl
                 val newPost = mDatabaseReference!!.child(categoryIdSelect).child(title_val)
-
-                newPost.child("desc").setValue(desc_val)
-                newPost.child("prompt").setValue(prompts_val)
+                newPost.child("title").setValue(title_val)
+                newPost.child("description").setValue(desc_val)
+                newPost.child("prompts").setValue(prompts_val)
                 newPost.child("image").setValue(downloadUrl!!.toString())
                 newPost.push()
 
-                startActivity(Intent(this, ExerciseDetailsActivity::class.java))
+                startActivity(Intent(this, ExerciseDetailsActivity::class.java)
+                        .putExtra("title", title_val))
                 finish()
             }
-
         }
-
     }
 
     private fun loadCategoryToSpinner(){
@@ -94,7 +91,7 @@ class UploadExercise : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode != Activity.RESULT_OK)
+        if (resultCode != RESULT_OK)
             return
         if (requestCode == GALLERY_REQESST) {
             imgUrl = data.data
@@ -103,7 +100,6 @@ class UploadExercise : AppCompatActivity() {
             } catch (e: OutOfMemoryError) {
                 e.fillInStackTrace()
             }
-
         }
     }
 }

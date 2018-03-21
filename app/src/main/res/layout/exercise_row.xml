@@ -2,7 +2,7 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/cardViewCategory"
+    android:id="@+id/cardViewExercise"
     android:layout_margin="15dp">
 
     <LinearLayout
@@ -11,7 +11,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/post_title"
+            android:id="@+id/post_title_exe"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
@@ -20,7 +20,7 @@
             android:textStyle="bold" />
 
         <ImageView
-            android:id="@+id/post_img"
+            android:id="@+id/post_img_exe"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
@@ -29,7 +29,15 @@
             android:src="@drawable/add_btn" />
 
         <TextView
-            android:id="@+id/post_desc"
+            android:id="@+id/post_desc_exe"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:paddingVertical="10dp"
+            android:text="Post desc" />
+
+        <TextView
+            android:id="@+id/post_prompts_exe"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"

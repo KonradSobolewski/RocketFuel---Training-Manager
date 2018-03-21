@@ -1,5 +1,6 @@
 package com.example.konrad.rocketfuel.HomeFragments
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -18,12 +19,10 @@ import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 
-/**
- * A simple [Fragment] subclass.
- */
 class CategoryFragment : Fragment() {
 
     companion object {
+        @SuppressLint("StaticFieldLeak")
         private val Instance: CategoryFragment = CategoryFragment()
         fun getInstance(): Fragment? {
             return Instance
@@ -63,7 +62,6 @@ class CategoryFragment : Fragment() {
                 )
             }
         }
-
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
@@ -84,7 +82,6 @@ class CategoryFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-
         if(mAdapter != null){
             mAdapter!!.startListening()
         }
