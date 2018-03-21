@@ -37,6 +37,8 @@ class LoginActivity : AppCompatActivity() {
     private var dbRef: DatabaseReference? = null
     private var mAuth: FirebaseAuth? = null
 
+    private var mListener: FirebaseAuth.AuthStateListener? = null
+
     private val RC_SIGN_IN = 1
     private var mGoogleApiClient: GoogleApiClient? = null
     private var spotsDialog: SpotsDialog? = null
@@ -68,6 +70,15 @@ class LoginActivity : AppCompatActivity() {
 
         dbRef = FirebaseDatabase.getInstance().reference.child("Users")
         mAuth = FirebaseAuth.getInstance()
+
+        mListener = FirebaseAuth.AuthStateListener { auth ->
+            val user = auth.currentUser
+            if(user != null) {
+                val homeIntent = Intent(this, HomeActivity::class.java)
+                startActivity(homeIntent)
+                finish()
+            }
+        }
 
         val isRegisterDone: Boolean = intent.getBooleanExtra("registerFinishedFlag",
                 false)
@@ -219,5 +230,11 @@ class LoginActivity : AppCompatActivity() {
     override fun onBackPressed() {
         super.onBackPressed()
         finish()
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        mAuth?.addAuthStateListener(mListener!!)
     }
 }

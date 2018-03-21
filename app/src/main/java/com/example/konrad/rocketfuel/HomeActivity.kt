@@ -30,7 +30,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var mDatabase: DatabaseReference? = null
 
     private var mAuth: FirebaseAuth? = null
-    private var mListener: FirebaseAuth.AuthStateListener? = null
     var userName: String? = null
     var userEmail: String? = null
 
@@ -41,14 +40,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         mDatabase = FirebaseDatabase.getInstance().reference
         mAuth = FirebaseAuth.getInstance()
-        mListener = FirebaseAuth.AuthStateListener { auth ->
-            val user = auth.currentUser
-            if(user ==  null) {
-                val loginIntent = Intent(this, LoginActivity::class.java)
-                startActivity(loginIntent)
-                finish()
-            }
-        }
+
         //Add adapter to pageView
         val myFragAdapter = MyFragmentAdapter(supportFragmentManager,this)
         homeViewPager.adapter = myFragAdapter
@@ -72,27 +64,21 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         nav_view.setNavigationItemSelectedListener(this)
 
-        val userReference = mDatabase!!.child("Users").child(mAuth!!.currentUser!!.uid)
-        userReference.addListenerForSingleValueEvent(object : ValueEventListener {
+        val usersReference = mDatabase!!.child("Users")
+        usersReference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(error: DatabaseError?) {
                 println(error!!.message)
             }
 
             override fun onDataChange(snapshot: DataSnapshot?) {
-                userName = snapshot!!.child("Name").value.toString() + " " +
-                        snapshot.child("Surname").value.toString()
-                userEmail = snapshot.child("Email").value.toString()
+                val currentUserSnapshot: DataSnapshot? = snapshot?.child(mAuth?.currentUser?.uid)
+                userName = currentUserSnapshot?.child("Name")?.value.toString() + " " +
+                        currentUserSnapshot?.child("Surname")?.value.toString()
+                userEmail = currentUserSnapshot?.child("Email")?.value.toString()
                 nav_view.getHeaderView(0).navbarHeaderID.text = userName
                 nav_view.getHeaderView(0).navbarEmailID.text = userEmail
             }
         })
-    }
-
-
-    override fun onStart() {
-        super.onStart()
-
-        mAuth?.addAuthStateListener(mListener!!)
     }
 
     override fun onBackPressed() {
