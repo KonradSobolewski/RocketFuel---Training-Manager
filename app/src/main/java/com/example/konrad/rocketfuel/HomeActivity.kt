@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -30,6 +31,8 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private var mAuth: FirebaseAuth? = null
     private var mListener: FirebaseAuth.AuthStateListener? = null
+    var userName: String? = null
+    var userEmail: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,9 +72,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         nav_view.setNavigationItemSelectedListener(this)
 
-        var userName: String? = null
-        var userEmail: String? = null
-        val userReference = mDatabase!!.child(mAuth!!.currentUser!!.uid)
+        val userReference = mDatabase!!.child("Users").child(mAuth!!.currentUser!!.uid)
         userReference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(error: DatabaseError?) {
                 println(error!!.message)
@@ -81,15 +82,12 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 userName = snapshot!!.child("Name").value.toString() + " " +
                         snapshot.child("Surname").value.toString()
                 userEmail = snapshot.child("Email").value.toString()
+                nav_view.getHeaderView(0).navbarHeaderID.text = userName
+                nav_view.getHeaderView(0).navbarEmailID.text = userEmail
             }
         })
-
-
-
-        nav_view.getHeaderView(0).navbarHeaderID.text = userName
-        nav_view.getHeaderView(0).navbarEmailID.text = userEmail
-
     }
+
 
     override fun onStart() {
         super.onStart()

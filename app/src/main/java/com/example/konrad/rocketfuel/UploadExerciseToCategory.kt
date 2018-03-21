@@ -82,7 +82,7 @@ class UploadExerciseToCategory : AppCompatActivity() {
             }
         }
     }
-    
+
     //change font
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
