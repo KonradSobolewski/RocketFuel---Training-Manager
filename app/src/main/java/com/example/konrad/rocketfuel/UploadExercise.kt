@@ -48,6 +48,7 @@ class UploadExercise : AppCompatActivity() {
         val title_val = uploadTitle.text.toString().trim()
         val desc_val = uploadDescription.text.toString().trim()
         val prompts_val = coachPromptUpload.text.toString().trim()
+        categoryIdSelect = spinner.text.toString()
 
         if (!TextUtils.isEmpty(title_val) && !TextUtils.isEmpty(desc_val) && !TextUtils.isEmpty(prompts_val) && imgUrl != null) {
             val filePath = mStorageReference!!.child("Exercises_img").child(imgUrl!!.lastPathSegment)
@@ -86,8 +87,7 @@ class UploadExercise : AppCompatActivity() {
 
             spinner.setItems(spinnerData!!)
             spinner.setOnItemSelectedListener { view, position, id, item ->
-                if(position != 0)
-                    categoryIdSelect = spinnerData!![position-1]
+                categoryIdSelect = spinnerData!![position]
             }
         }
     }
