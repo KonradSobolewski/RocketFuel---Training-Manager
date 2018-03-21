@@ -27,6 +27,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.DatabaseReference
+import dmax.dialog.SpotsDialog
 
 
 class LoginActivity : AppCompatActivity() {
@@ -38,8 +39,7 @@ class LoginActivity : AppCompatActivity() {
 
     private val RC_SIGN_IN = 1
     private var mGoogleApiClient: GoogleApiClient? = null
-
-    private var progressBar: ProgressBar? = null
+    private var spotsDialog: SpotsDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,7 +88,7 @@ class LoginActivity : AppCompatActivity() {
                     ).show()
                 }.addApi(Auth.GOOGLE_SIGN_IN_API, gso).build()
 
-        progressBar = this.loginProgressBar
+
         registerText?.setOnClickListener({
             startActivity(Intent(this, RegisterActivity::class.java))
         })
@@ -107,7 +107,7 @@ class LoginActivity : AppCompatActivity() {
         animationDrawable?.setExitFadeDuration(4500)
         animationDrawable?.start()
 
-        progressBar = this.loginProgressBar
+        spotsDialog = SpotsDialog(this,R.style.DialogStyleLog)
     }
 
     private fun login(email: String, pass: String) {
@@ -116,10 +116,10 @@ class LoginActivity : AppCompatActivity() {
             return
         }
         else {
-            progressBar!!.visibility = View.VISIBLE
+            spotsDialog?.show()
             mAuth!!.signInWithEmailAndPassword(email, pass)
                     .addOnCompleteListener(this) { task ->
-                        progressBar!!.visibility = View.GONE
+                        spotsDialog?.dismiss()
                         if (task.isSuccessful) {
                             if (!mAuth!!.currentUser!!.isEmailVerified) {
                                 Toast.makeText(
@@ -145,7 +145,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun signIn() {
-        progressBar!!.visibility = View.VISIBLE
+        spotsDialog?.show()
 
         val signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient)
         startActivityForResult(signInIntent, RC_SIGN_IN)
@@ -161,7 +161,7 @@ class LoginActivity : AppCompatActivity() {
                 val account = task.getResult(ApiException::class.java)
                 firebaseAuthWithGoogle(account)
             } catch (e: ApiException) {
-                progressBar!!.visibility = View.GONE
+                spotsDialog?.dismiss()
 
                 // Google Sign In failed, update UI appropriately
                 // ...
@@ -173,7 +173,7 @@ class LoginActivity : AppCompatActivity() {
         val credential = GoogleAuthProvider.getCredential(account.idToken, null)
         mAuth?.signInWithCredential(credential)
                 ?.addOnCompleteListener(this) { task->
-                    progressBar!!.visibility = View.GONE
+                    spotsDialog?.dismiss()
 
                     if(task.isSuccessful) {
                         val userId: String? = mAuth!!.currentUser!!.uid

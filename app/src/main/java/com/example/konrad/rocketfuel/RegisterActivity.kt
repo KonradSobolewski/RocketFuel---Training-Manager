@@ -12,6 +12,7 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import dmax.dialog.SpotsDialog
 import kotlinx.android.synthetic.main.activity_register.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
@@ -19,8 +20,7 @@ class RegisterActivity : AppCompatActivity() {
     private var mAuth: FirebaseAuth? = null
     private var dbRef: DatabaseReference? = null
     private var animationDrawable: AnimationDrawable? = null
-    private var progressBar: ProgressBar? = null
-
+    private var spotsDialog: SpotsDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +40,7 @@ class RegisterActivity : AppCompatActivity() {
         animationDrawable?.setExitFadeDuration(4500)
         animationDrawable?.start()
 
-        progressBar = this.registerProgressBar
+        spotsDialog = SpotsDialog(this,R.style.DialogStyleReg)
 
     }
 
@@ -57,7 +57,7 @@ class RegisterActivity : AppCompatActivity() {
             return
         }
         else {
-            progressBar!!.visibility = View.VISIBLE
+            spotsDialog?.show()
 
             mAuth?.createUserWithEmailAndPassword(email, pass)
                     ?.addOnCompleteListener(this) { task ->
@@ -73,13 +73,13 @@ class RegisterActivity : AppCompatActivity() {
                             Toast.makeText(
                                     this, "Verification email sent", Toast.LENGTH_SHORT
                             ).show()
-                            progressBar!!.visibility = View.GONE
+                            spotsDialog?.dismiss()
 
                             startActivity(Intent(this, LoginActivity::class.java)
                                     .putExtra("registerFinishedFlag", true))
                             finish()
                         } else {
-                            progressBar!!.visibility = View.GONE
+                            spotsDialog?.dismiss()
 
                             Toast.makeText(
                                     this, "Account creating failed", Toast.LENGTH_SHORT

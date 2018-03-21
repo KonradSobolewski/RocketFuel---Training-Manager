@@ -11,6 +11,7 @@ import android.widget.Toast
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import dmax.dialog.SpotsDialog
 import kotlinx.android.synthetic.main.activity_upload_exercise.*
 import kotlinx.android.synthetic.main.activity_upload_exercise_to_category.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
@@ -25,6 +26,7 @@ class UploadExerciseToCategory : AppCompatActivity() {
     private var imgUrl: Uri? = null
 
     private var title : String? = null
+    private var spotsDialog: SpotsDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +47,7 @@ class UploadExerciseToCategory : AppCompatActivity() {
         uploadImageBtnCategory.setOnClickListener({
             startPosting()
         })
+        spotsDialog = SpotsDialog(this,R.style.DialogStyle)
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -52,7 +55,7 @@ class UploadExerciseToCategory : AppCompatActivity() {
         val title_val = uploadTitleCategory.text.toString().trim()
         val desc_val = uploadDescriptionCategory.text.toString().trim()
         val prompts_val = coachPromptUploadCategory.text.toString().trim()
-
+        spotsDialog?.show()
         if (!TextUtils.isEmpty(title_val) && !TextUtils.isEmpty(desc_val) && !TextUtils.isEmpty(prompts_val) && imgUrl != null) {
             val filePath = mStorageReference!!.child("Exercises_img").child(imgUrl!!.lastPathSegment)
             filePath.putFile(imgUrl!!).addOnSuccessListener { taskSnapshot ->
@@ -66,12 +69,13 @@ class UploadExerciseToCategory : AppCompatActivity() {
                 newPost.child("timestamp").setValue( dateFormat.format(date).toString())
                 newPost.child("image").setValue(downloadUrl!!.toString())
                 newPost.push()
-
+                spotsDialog?.dismiss()
                 startActivity(Intent(this, ExerciseDetailsActivity::class.java)
                         .putExtra("title", title_val))
                 finish()
             }
         }else{
+            spotsDialog?.dismiss()
             Toast.makeText(this,"Complete all fields",Toast.LENGTH_SHORT).show()
         }
     }

@@ -77,15 +77,5 @@
         android:text="@string/register"
         android:textColor="@color/darkLight" />
 
-    <ProgressBar
-        android:id="@+id/loginProgressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/emailText"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="13dp"
-        android:indeterminate="true"
-        android:visibility="gone"/>
-
 
 </RelativeLayout>
