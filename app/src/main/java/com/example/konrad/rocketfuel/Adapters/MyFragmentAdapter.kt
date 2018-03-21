@@ -15,11 +15,11 @@ class MyFragmentAdapter(fm: FragmentManager, context: Context) : FragmentPagerAd
     private var context: Context? = context
 
     override fun getItem(position: Int): android.support.v4.app.Fragment? {
-        when (position) {
-            0 -> return CategoryFragment.getInstance()
-            1 -> return RecentFragment.getInstance()
-            2 -> return NewsFragment.getInstance()
-            else -> return null
+        return when (position) {
+            0 -> CategoryFragment.getInstance()
+            1 -> RecentFragment.getInstance()
+            2 -> NewsFragment.getInstance()
+            else -> null
         }
     }
 

@@ -23,7 +23,6 @@ import com.google.firebase.database.FirebaseDatabase
 class CategoryFragment : Fragment() {
 
     companion object {
-        @SuppressLint("StaticFieldLeak")
         private val Instance: CategoryFragment = CategoryFragment()
         fun getInstance(): Fragment? {
             return Instance
@@ -63,10 +62,6 @@ class CategoryFragment : Fragment() {
                                 .putExtra("title", model?.title!!)
                 )
             }
-            holder?.itemView?.setOnLongClickListener({
-                show()
-            })
-
         }
     }
 
@@ -105,12 +100,6 @@ class CategoryFragment : Fragment() {
             mAdapter!!.stopListening()
         }
         super.onStop()
-    }
-
-    fun show():Boolean{
-        var snackbar:Snackbar= Snackbar.make(view!!,"dpupa",500)
-        snackbar.show()
-        return true
     }
 }
 

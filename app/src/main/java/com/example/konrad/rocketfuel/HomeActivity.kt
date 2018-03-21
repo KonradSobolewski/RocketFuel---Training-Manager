@@ -15,11 +15,13 @@ import android.view.View
 import android.widget.LinearLayout
 import com.example.konrad.rocketfuel.Adapters.MyFragmentAdapter
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_home.*
+import kotlinx.android.synthetic.main.activity_login.view.*
 import kotlinx.android.synthetic.main.app_bar_home.*
 import kotlinx.android.synthetic.main.content_home.*
+import kotlinx.android.synthetic.main.nav_header_home.*
+import kotlinx.android.synthetic.main.nav_header_home.view.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
 class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -66,6 +68,27 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
+
+        var userName: String? = null
+        var userEmail: String? = null
+        val userReference = mDatabase!!.child(mAuth!!.currentUser!!.uid)
+        userReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError?) {
+                println(error!!.message)
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot?) {
+                userName = snapshot!!.child("Name").value.toString() + " " +
+                        snapshot.child("Surname").value.toString()
+                userEmail = snapshot.child("Email").value.toString()
+            }
+        })
+
+
+
+        nav_view.getHeaderView(0).navbarHeaderID.text = userName
+        nav_view.getHeaderView(0).navbarEmailID.text = userEmail
+
     }
 
     override fun onStart() {
@@ -82,6 +105,8 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             finish()
         }
     }
+
+
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
