@@ -3,6 +3,7 @@ package com.example.konrad.rocketfuel.HomeFragments
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -56,11 +57,16 @@ class CategoryFragment : Fragment() {
             Log.d("position", Integer.toString(position))
 
             holder?.itemView?.setOnClickListener {
+
                 startActivity(
                         Intent(activity, ExerciseDetailsActivity::class.java)
                                 .putExtra("title", model?.title!!)
                 )
             }
+            holder?.itemView?.setOnLongClickListener({
+                show()
+            })
+
         }
     }
 
@@ -99,6 +105,12 @@ class CategoryFragment : Fragment() {
             mAdapter!!.stopListening()
         }
         super.onStop()
+    }
+
+    fun show():Boolean{
+        var snackbar:Snackbar= Snackbar.make(view!!,"dpupa",500)
+        snackbar.show()
+        return true
     }
 }
 

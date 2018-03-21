@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.konrad.rocketfuel.UploadExercise">
+    tools:context="com.example.konrad.rocketfuel.UploadExerciseToCategory">
 
     <LinearLayout
         android:weightSum="2"
@@ -13,7 +13,7 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/imageUploadView"
+            android:id="@+id/imageUploadViewCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
@@ -22,27 +22,18 @@
             android:saveEnabled="false"
             android:scaleType="fitCenter" />
 
-        <TextView
-            android:id="@+id/categoryNameCammon"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="10dp"
-            android:layout_marginTop="10dp"
-            android:padding="5dp"
-            android:text="@string/category"
-            android:textSize="10sp" />
-
-        <com.jaredrummler.materialspinner.MaterialSpinner
-            android:id="@+id/spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:layout_marginHorizontal="10dp"
-            android:layout_marginBottom="10dp"
-            android:background="@drawable/text_shape"/>
+       <TextView
+           android:id="@+id/categoryName"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_margin="10dp"
+           android:padding="10dp"
+           android:text="@string/databaseError"
+           android:textSize="16sp"
+           android:background="@drawable/text_shape"/>
 
         <EditText
-            android:id="@+id/uploadTitle"
+            android:id="@+id/uploadTitleCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
@@ -52,7 +43,7 @@
             android:background="@drawable/text_shape"/>
 
         <EditText
-            android:id="@+id/uploadDescription"
+            android:id="@+id/uploadDescriptionCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
@@ -62,7 +53,7 @@
             android:background="@drawable/text_shape"/>
 
         <EditText
-            android:id="@+id/coachPromptUpload"
+            android:id="@+id/coachPromptUploadCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
@@ -70,17 +61,17 @@
             android:inputType="textMultiLine"
             android:padding="10dp"
             android:background="@drawable/text_shape"/>
-        
 
-            <Button
-                android:id="@+id/uploadImageBtn"
-                android:text="@string/upload"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                style="@style/Base.Widget.AppCompat.Button.Colored"
-                android:background="@drawable/btn_upload"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"/>
+
+        <Button
+            android:id="@+id/uploadImageBtnCategory"
+            android:text="@string/upload"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            style="@style/Base.Widget.AppCompat.Button.Colored"
+            android:background="@drawable/btn_upload"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"/>
 
 
     </LinearLayout>

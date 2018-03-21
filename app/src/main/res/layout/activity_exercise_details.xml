@@ -15,7 +15,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         app:fabSize="normal"
-        app:backgroundTint="@android:color/white"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        app:backgroundTint="@color/redFloating"
+        app:srcCompat="@drawable/ic_add_floating" />
 
 </android.support.design.widget.CoordinatorLayout>

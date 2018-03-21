@@ -1,5 +1,6 @@
 package com.example.konrad.rocketfuel
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -14,6 +15,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_exercise_details.*
 import kotlinx.android.synthetic.main.content_exercise_details.*
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
 class ExerciseDetailsActivity : AppCompatActivity() {
 
@@ -33,8 +35,8 @@ class ExerciseDetailsActivity : AppCompatActivity() {
         exercisesRecycleView.layoutManager = LinearLayoutManager(this)
         logRecycleView()
 
-        fab.setOnClickListener { view ->
-            startActivity(Intent(this,UploadExercise::class.java)
+        fab.setOnClickListener {
+            startActivity(Intent(this,UploadExerciseToCategory::class.java)
                     .putExtra("title",title))
         }
     }
@@ -62,5 +64,10 @@ class ExerciseDetailsActivity : AppCompatActivity() {
         }
         mAdapter.startListening()
         exercisesRecycleView.adapter = mAdapter
+    }
+
+    //change font
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
     }
 }

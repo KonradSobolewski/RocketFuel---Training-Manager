@@ -28,5 +28,8 @@
     <string name="description">Description…</string>
     <string name="coach">Coach prompts…</string>
     <string name="upload">Upload</string>
+    <string name="databaseError">DatabaseError</string>
+    <string name="addExercise">Add exercise</string>
+    <string name="category">Set category:</string>
 
 </resources>
