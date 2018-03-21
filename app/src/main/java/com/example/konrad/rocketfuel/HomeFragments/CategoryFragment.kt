@@ -51,7 +51,7 @@ class CategoryFragment : Fragment() {
         override fun onBindViewHolder(holder: CategoryViewHolder?, position: Int,
                                       model: CategoryItem?) {
             holder?.setTitle(model?.title!!)
-            holder?.setDescritopn(model?.description!!)
+            holder?.setDescritopn("Description: "+model?.description!!)
             holder?.setImage(context, model?.image!!)
             Log.d("position", Integer.toString(position))
 

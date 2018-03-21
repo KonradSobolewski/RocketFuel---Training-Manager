@@ -57,8 +57,9 @@ class ExerciseDetailsActivity : AppCompatActivity() {
             override fun onBindViewHolder(holder: ExerciseViewHolder?, position: Int,
                                           model: ExerciseItem?) {
                 holder?.setTitle(model?.title!!)
-                holder?.setDesc(model?.description!!)
-                holder?.setPrompt(model?.prompts!!)
+                holder?.setDesc("Description: "+ model?.description!!)
+                holder?.setPrompt("Prompts: "+ model?.prompts!!)
+                holder?.setTimestamp(model?.timestamp!!)
                 holder?.setImg(this@ExerciseDetailsActivity, model?.image!!)
             }
         }

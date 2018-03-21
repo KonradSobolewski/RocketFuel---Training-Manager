@@ -24,6 +24,11 @@ class ExerciseViewHolder(private var mview: View) : RecyclerView.ViewHolder(mvie
         post_prompt.text = prompts
     }
 
+    fun setTimestamp(timestamp: String) {
+        val post_timestamp = mview.post_timestamp_exe
+        post_timestamp.text = timestamp
+    }
+
     fun setImg(context: Context, image: String) {
         val post_image = mview.post_img_exe
         Picasso.with(context).load(image).into(post_image)

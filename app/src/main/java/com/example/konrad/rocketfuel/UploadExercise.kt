@@ -12,6 +12,8 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.activity_upload_exercise.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.collections.ArrayList
 
 class UploadExercise : AppCompatActivity() {
@@ -53,15 +55,18 @@ class UploadExercise : AppCompatActivity() {
         if (!TextUtils.isEmpty(title_val) && !TextUtils.isEmpty(desc_val) && !TextUtils.isEmpty(prompts_val) && imgUrl != null) {
             val filePath = mStorageReference!!.child("Exercises_img").child(imgUrl!!.lastPathSegment)
             filePath.putFile(imgUrl!!).addOnSuccessListener { taskSnapshot ->
+                val dateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
+                val date = Date()
                 val downloadUrl = taskSnapshot.downloadUrl
                 val newPost = mDatabaseReference!!.child(categoryIdSelect).child(title_val)
                 newPost.child("title").setValue(title_val)
                 newPost.child("description").setValue(desc_val)
                 newPost.child("prompts").setValue(prompts_val)
+                newPost.child("timestamp").setValue(dateFormat.format(date).toString())
                 newPost.child("image").setValue(downloadUrl!!.toString())
                 newPost.push()
 
-                startActivity(Intent(this, ExerciseDetailsActivity::class.java)
+                startActivity(Intent(this, HomeActivity::class.java)
                         .putExtra("title", title_val))
                 finish()
             }
@@ -89,6 +94,7 @@ class UploadExercise : AppCompatActivity() {
             spinner.setOnItemSelectedListener { view, position, id, item ->
                 categoryIdSelect = spinnerData!![position]
             }
+
         }
     }
 
