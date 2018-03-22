@@ -28,11 +28,11 @@ class MyFragmentAdapter(fm: FragmentManager, context: Context) : FragmentPagerAd
     }
 
     override fun getPageTitle(position: Int): CharSequence {
-        when (position) {
-            0 -> return "Category"
-            1 -> return "Recent"
-            2 -> return "News"
+        return when (position) {
+            0 -> "Category"
+            1 -> "Recent"
+            2 -> "News"
+            else -> ""
         }
-        return ""
     }
 }

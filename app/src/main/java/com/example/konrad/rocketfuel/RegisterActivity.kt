@@ -62,14 +62,14 @@ class RegisterActivity : AppCompatActivity() {
             mAuth?.createUserWithEmailAndPassword(email, pass)
                     ?.addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
-                            val userId: String? = mAuth!!.currentUser!!.uid
-                            val userIdRef: DatabaseReference = dbRef!!.child(userId)
-                            userIdRef.child("Name").setValue(userName)
-                            userIdRef.child("Surname").setValue(userSurname)
-                            userIdRef.child("Email").setValue(email)
-                            userIdRef.push()
+                            val userId: String? = mAuth?.currentUser?.uid
+                            val userIdRef: DatabaseReference? = dbRef?.child(userId)
+                            userIdRef?.child("Name")?.setValue(userName)
+                            userIdRef?.child("Surname")?.setValue(userSurname)
+                            userIdRef?.child("Email")?.setValue(email)
+                            userIdRef?.push()
 
-                            mAuth!!.currentUser!!.sendEmailVerification()
+                            mAuth?.currentUser?.sendEmailVerification()
                             Toast.makeText(
                                     this, "Verification email sent", Toast.LENGTH_SHORT
                             ).show()

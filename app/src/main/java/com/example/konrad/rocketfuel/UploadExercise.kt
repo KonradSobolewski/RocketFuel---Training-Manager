@@ -10,10 +10,8 @@ import android.widget.Toast
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import kotlinx.android.synthetic.main.activity_home.*
 import dmax.dialog.SpotsDialog
 import kotlinx.android.synthetic.main.activity_upload_exercise.*
-import kotlinx.android.synthetic.main.nav_header_home.view.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import java.text.SimpleDateFormat
 import java.util.*
@@ -23,7 +21,7 @@ class UploadExercise : AppCompatActivity() {
 
     private var mStorageReference: StorageReference? = null
     private var mDatabaseReference: DatabaseReference? = null
-    private val GALLERY_REQESST = 1
+    private val GALLERY_REQUEST = 1
     private var imgUrl: Uri? = null
 
     private var spinnerData:ArrayList<String>? = ArrayList()
@@ -41,7 +39,7 @@ class UploadExercise : AppCompatActivity() {
         imageUploadView.setOnClickListener({
             val galleryIntent = Intent(Intent.ACTION_GET_CONTENT)
             galleryIntent.type = "image/*"
-            startActivityForResult(galleryIntent, GALLERY_REQESST)
+            startActivityForResult(galleryIntent, GALLERY_REQUEST)
         })
 
         uploadImageBtn.setOnClickListener({
@@ -58,13 +56,13 @@ class UploadExercise : AppCompatActivity() {
         val prompts_val = coachPromptUpload.text.toString().trim()
         categoryIdSelect = spinner.text.toString()
 
-        val dbRefCategory: DatabaseReference = mDatabaseReference!!.child(categoryIdSelect)
-        dbRefCategory.addListenerForSingleValueEvent(object : ValueEventListener {
+        val dbRefCategory: DatabaseReference? = mDatabaseReference?.child(categoryIdSelect)
+        dbRefCategory?.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(error: DatabaseError?) {
-                println(error!!.message)
+                println(error?.message)
             }
             override fun onDataChange(snapshot: DataSnapshot?) {
-                if(snapshot!!.hasChild(title_val)) {
+                if(snapshot?.hasChild(title_val) == true) {
                     Toast.makeText(
                             this@UploadExercise, "Exercise exists", Toast.LENGTH_SHORT
                     ).show()
@@ -92,7 +90,7 @@ class UploadExercise : AppCompatActivity() {
                 dbRef.child("description").setValue(description)
                 dbRef.child("prompts").setValue(hints)
                 dbRef.child("timestamp").setValue(dateFormat.format(date).toString())
-                dbRef.child("image").setValue(downloadUrl!!.toString())
+                dbRef.child("image").setValue(downloadUrl.toString())
                 dbRef.push()
 
                 spotsDialog?.dismiss()
@@ -105,21 +103,20 @@ class UploadExercise : AppCompatActivity() {
     }
 
     private fun loadCategoryToSpinner(){
-        FirebaseDatabase.getInstance().reference.child("Exercises").addListenerForSingleValueEvent(listener)
+        FirebaseDatabase.getInstance().reference.child("Exercises")
+                .addListenerForSingleValueEvent(listener)
     }
 
     private val listener = object : ValueEventListener{
-        override fun onCancelled(p0: DatabaseError?) {
-
-        }
+        override fun onCancelled(p0: DatabaseError?) {}
 
         override fun onDataChange(p0: DataSnapshot?) {
-            p0!!.children
-                    .map { it.key.toString() }
-                    .forEach { spinnerData!!.add(it) }
+            p0?.children
+                    ?.map { it.key.toString() }
+                    ?.forEach { spinnerData!!.add(it) }
 
             spinner.setItems(spinnerData!!)
-            spinner.setOnItemSelectedListener { view, position, id, item ->
+            spinner.setOnItemSelectedListener { _, position, _, _ ->
                 categoryIdSelect = spinnerData!![position]
             }
 
@@ -130,7 +127,7 @@ class UploadExercise : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode != RESULT_OK)
             return
-        if (requestCode == GALLERY_REQESST) {
+        if (requestCode == GALLERY_REQUEST) {
             imgUrl = data.data
             try {
                 imageUploadView.setImageURI(imgUrl)

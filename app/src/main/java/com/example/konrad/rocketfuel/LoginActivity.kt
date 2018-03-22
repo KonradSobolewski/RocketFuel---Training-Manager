@@ -5,13 +5,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.AnimationDrawable
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
+import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
 import android.util.Log
-import android.view.View
-import android.widget.*
+import android.widget.Toast
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -21,13 +20,9 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.*
+import dmax.dialog.SpotsDialog
 import kotlinx.android.synthetic.main.activity_login.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.DatabaseReference
-import dmax.dialog.SpotsDialog
 
 
 class LoginActivity : AppCompatActivity() {
@@ -73,7 +68,7 @@ class LoginActivity : AppCompatActivity() {
 
         mListener = FirebaseAuth.AuthStateListener { auth ->
             val user = auth.currentUser
-            if(user != null) {
+            if (user != null) {
                 val homeIntent = Intent(this, HomeActivity::class.java)
                 startActivity(homeIntent)
                 finish()
@@ -100,25 +95,25 @@ class LoginActivity : AppCompatActivity() {
                 }.addApi(Auth.GOOGLE_SIGN_IN_API, gso).build()
 
 
-        registerText?.setOnClickListener({
+        registerText.setOnClickListener({
             startActivity(Intent(this, RegisterActivity::class.java))
         })
 
-        loginBtn?.setOnClickListener({
+        loginBtn.setOnClickListener({
             login(emailText?.text.toString().trim(), passwordText?.text.toString().trim())
         })
 
-        googleBtn?.setOnClickListener({
+        googleBtn.setOnClickListener({
             signIn()
         })
 
-        animationDrawable = relativeLayout?.background as AnimationDrawable
+        animationDrawable = relativeLayout.background as AnimationDrawable
 
         animationDrawable?.setEnterFadeDuration(4500)
         animationDrawable?.setExitFadeDuration(4500)
         animationDrawable?.start()
 
-        spotsDialog = SpotsDialog(this,R.style.DialogStyleLog)
+        spotsDialog = SpotsDialog(this, R.style.DialogStyleLog)
     }
 
     private fun login(email: String, pass: String) {
@@ -128,11 +123,11 @@ class LoginActivity : AppCompatActivity() {
         }
         else {
             spotsDialog?.show()
-            mAuth!!.signInWithEmailAndPassword(email, pass)
-                    .addOnCompleteListener(this) { task ->
+            mAuth?.signInWithEmailAndPassword(email, pass)
+                    ?.addOnCompleteListener(this) { task ->
                         spotsDialog?.dismiss()
                         if (task.isSuccessful) {
-                            if (!mAuth!!.currentUser!!.isEmailVerified) {
+                            if (mAuth?.currentUser?.isEmailVerified != true) {
                                 Toast.makeText(
                                         this@LoginActivity, "Please verify your email",
                                         Toast.LENGTH_SHORT
@@ -164,18 +159,13 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
-                // Google Sign In was successful, authenticate with Firebase
                 val account = task.getResult(ApiException::class.java)
                 firebaseAuthWithGoogle(account)
             } catch (e: ApiException) {
                 spotsDialog?.dismiss()
-
-                // Google Sign In failed, update UI appropriately
-                // ...
             }
         }
     }
@@ -187,26 +177,26 @@ class LoginActivity : AppCompatActivity() {
                     spotsDialog?.dismiss()
 
                     if(task.isSuccessful) {
-                        val userId: String? = mAuth!!.currentUser!!.uid
+                        val userId: String? = mAuth?.currentUser?.uid
                         val acct = GoogleSignIn.getLastSignedInAccount(this)
-                        dbRef!!.addValueEventListener(object : ValueEventListener{
+                        dbRef?.addValueEventListener(object : ValueEventListener{
                             override fun onCancelled(p0: DatabaseError?) {
                                 Log.e("Logout", "error!")
                             }
 
                             override fun onDataChange(p0: DataSnapshot?) {
-                                if(!p0!!.hasChild(userId)){
+                                if(p0?.hasChild(userId) != true){
                                     if (acct != null ) {
-                                        val databaseRef2: DatabaseReference = dbRef!!.child(userId)
+                                        val databaseRef2: DatabaseReference? = dbRef?.child(userId)
                                         val personName = acct.givenName
                                         val personFamilyName = acct.familyName
                                         val personEmail = acct.email
                                         val personImg = acct.photoUrl.toString()
-                                        databaseRef2.child("Name").setValue(personName)
-                                        databaseRef2.child("Surname").setValue(personFamilyName)
-                                        databaseRef2.child("Email").setValue(personEmail)
-                                        databaseRef2.child("Image").setValue(personImg)
-                                        databaseRef2.push()
+                                        databaseRef2?.child("Name")?.setValue(personName)
+                                        databaseRef2?.child("Surname")?.setValue(personFamilyName)
+                                        databaseRef2?.child("Email")?.setValue(personEmail)
+                                        databaseRef2?.child("Image")?.setValue(personImg)
+                                        databaseRef2?.push()
                                     }
                                 }
                             }

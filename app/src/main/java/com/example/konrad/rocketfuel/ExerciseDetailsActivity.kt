@@ -29,7 +29,7 @@ class ExerciseDetailsActivity : AppCompatActivity() {
         title = intent.extras.getString("title")
 
         mDatabaseReference = FirebaseDatabase.getInstance().reference.child("Exercises").child(title)
-        mDatabaseReference!!.keepSynced(true)
+        mDatabaseReference?.keepSynced(true)
 
         exercisesRecycleView.setHasFixedSize(true)
         exercisesRecycleView.layoutManager = LinearLayoutManager(this)
@@ -41,7 +41,7 @@ class ExerciseDetailsActivity : AppCompatActivity() {
         }
     }
 
-    private fun logRecycleView(){
+    private fun logRecycleView() {
 
         val options = FirebaseRecyclerOptions.Builder<ExerciseItem>()
                 .setQuery(mDatabaseReference,ExerciseItem::class.java)
@@ -49,18 +49,19 @@ class ExerciseDetailsActivity : AppCompatActivity() {
 
         val mAdapter = object : FirebaseRecyclerAdapter<ExerciseItem, ExerciseViewHolder>(options) {
 
-            override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ExerciseViewHolder{
-                val mView : View? = LayoutInflater.from(parent?.context)
+            override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ExerciseViewHolder {
+                val mView : View = LayoutInflater.from(parent?.context)
                         .inflate(R.layout.exercise_row,parent,false)
-                return ExerciseViewHolder(mView!!)
+                return ExerciseViewHolder(mView)
             }
+
             override fun onBindViewHolder(holder: ExerciseViewHolder?, position: Int,
                                           model: ExerciseItem?) {
-                holder?.setTitle(model?.title!!)
-                holder?.setDesc("Description: "+ model?.description!!)
-                holder?.setPrompt("Prompts: "+ model?.prompts!!)
-                holder?.setTimestamp(model?.timestamp!!)
-                holder?.setImg(this@ExerciseDetailsActivity, model?.image!!)
+                holder?.setTitle(model?.title ?: "")
+                holder?.setDesc("Description: " + model?.description)
+                holder?.setPrompt("Prompts: " + model?.prompts)
+                holder?.setTimestamp(model?.timestamp ?: "")
+                holder?.setImg(this@ExerciseDetailsActivity, model?.image ?: "")
             }
         }
         mAdapter.startListening()

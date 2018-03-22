@@ -42,12 +42,12 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mAuth = FirebaseAuth.getInstance()
 
         //Add adapter to pageView
-        val myFragAdapter = MyFragmentAdapter(supportFragmentManager,this)
+        val myFragAdapter = MyFragmentAdapter(supportFragmentManager, this)
         homeViewPager.adapter = myFragAdapter
         homeTab.setupWithViewPager(homeViewPager)
-        val root : View = homeTab.getChildAt(0)
-        if( root is LinearLayout ){
-            root.showDividers  = LinearLayout.SHOW_DIVIDER_MIDDLE
+        val root: View = homeTab.getChildAt(0)
+        if (root is LinearLayout){
+            root.showDividers = LinearLayout.SHOW_DIVIDER_MIDDLE
             val drawable = GradientDrawable()
             drawable.setColor(ContextCompat.getColor(this, R.color.colorWhite))
             drawable.setSize(3,2)
@@ -64,10 +64,10 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         nav_view.setNavigationItemSelectedListener(this)
 
-        val usersReference = mDatabase!!.child("Users")
-        usersReference.addListenerForSingleValueEvent(object : ValueEventListener {
+        val usersReference = mDatabase?.child("Users")
+        usersReference?.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(error: DatabaseError?) {
-                println(error!!.message)
+                println(error?.message)
             }
 
             override fun onDataChange(snapshot: DataSnapshot?) {
@@ -78,7 +78,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 userImage = currentUserSnapshot?.child("Image")?.value.toString()
                 nav_view.getHeaderView(0).navbarHeaderID.text = userName
                 nav_view.getHeaderView(0).navbarEmailID.text = userEmail
-                if(userImage!=null)
+                if (userImage != null)
                     Picasso.with(applicationContext)
                             .load(userImage)
                             .into(nav_view.getHeaderView(0).imagePersonIcon)
@@ -113,7 +113,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_exercise -> {
-                startActivity(Intent(this,UploadExercise::class.java))
+                startActivity(Intent(this, UploadExercise::class.java))
             }
             R.id.nav_training -> {
 
@@ -136,7 +136,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    private fun signOut():Boolean{
+    private fun signOut(): Boolean {
         FirebaseAuth.getInstance().signOut()
         startActivity(Intent(this@HomeActivity, LoginActivity::class.java))
         finish()

@@ -1,9 +1,7 @@
 package com.example.konrad.rocketfuel.HomeFragments
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -19,47 +17,47 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.android.synthetic.main.fragment_category.*
 
 class CategoryFragment : Fragment() {
 
     companion object {
         private val Instance: CategoryFragment = CategoryFragment()
-        fun getInstance(): Fragment? {
+        fun getInstance(): Fragment {
             return Instance
         }
     }
 
-    private var recyclerView : RecyclerView? = null
+    private var recyclerView: RecyclerView? = null
 
-    private var mDatabaseReference : DatabaseReference? =
+    private var mDatabaseReference: DatabaseReference =
             FirebaseDatabase.getInstance().reference.child("Category")
 
-    private var options : FirebaseRecyclerOptions<CategoryItem>? =
+    private var options: FirebaseRecyclerOptions<CategoryItem> =
             FirebaseRecyclerOptions.Builder<CategoryItem>()
                     .setQuery(mDatabaseReference,CategoryItem::class.java)
                     .build()
 
-    private var mAdapter : FirebaseRecyclerAdapter<CategoryItem, CategoryViewHolder>? =
-            object : FirebaseRecyclerAdapter<CategoryItem,CategoryViewHolder>(options) {
+    private var mAdapter: FirebaseRecyclerAdapter<CategoryItem, CategoryViewHolder> =
+            object: FirebaseRecyclerAdapter<CategoryItem,CategoryViewHolder>(options) {
 
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): CategoryViewHolder {
-            val mView : View? = LayoutInflater.from(parent?.context)
+            val mView: View? = LayoutInflater.from(parent?.context)
                     .inflate(R.layout.category_row,parent,false)
             return CategoryViewHolder(mView!!)
         }
 
         override fun onBindViewHolder(holder: CategoryViewHolder?, position: Int,
                                       model: CategoryItem?) {
-            holder?.setTitle(model?.title!!)
-            holder?.setDescritopn("Description: "+model?.description!!)
-            holder?.setImage(context, model?.image!!)
+            holder?.setTitle(model?.title ?: "")
+            holder?.setDescritopn("Description: " + model?.description)
+            holder?.setImage(context, model?.image ?: "")
             Log.d("position", Integer.toString(position))
 
             holder?.itemView?.setOnClickListener {
-
                 startActivity(
                         Intent(activity, ExerciseDetailsActivity::class.java)
-                                .putExtra("title", model?.title!!)
+                                .putExtra("title", model?.title)
                 )
             }
         }
@@ -68,14 +66,14 @@ class CategoryFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-        val view : View = inflater!!.inflate(
+        val view: View = inflater!!.inflate(
                 R.layout.fragment_category, container, false
         )
         val mLayoutManager = LinearLayoutManager(activity)
         recyclerView = view.findViewById(R.id.recycleCategory)
         recyclerView?.setHasFixedSize(true)
         recyclerView?.layoutManager = mLayoutManager
-        mAdapter!!.startListening()
+        mAdapter.startListening()
         recyclerView?.adapter = mAdapter
 
         return view
@@ -83,22 +81,16 @@ class CategoryFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        if(mAdapter != null){
-            mAdapter!!.startListening()
-        }
+        mAdapter.startListening()
     }
 
     override fun onResume() {
-        if(mAdapter != null){
-            mAdapter!!.startListening()
-        }
+        mAdapter.startListening()
         super.onResume()
     }
 
     override fun onStop() {
-        if(mAdapter != null){
-            mAdapter!!.stopListening()
-        }
+        mAdapter.stopListening()
         super.onStop()
     }
 }

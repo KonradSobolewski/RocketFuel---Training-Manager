@@ -12,15 +12,11 @@ import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import dmax.dialog.SpotsDialog
-import kotlinx.android.synthetic.main.activity_upload_exercise.*
 import kotlinx.android.synthetic.main.activity_upload_exercise_to_category.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import java.text.SimpleDateFormat
 import java.util.*
 import android.graphics.BitmapFactory
-import android.graphics.Bitmap
-import android.R.attr.data
-import android.util.Log
 import java.io.FileNotFoundException
 
 
@@ -28,10 +24,10 @@ class UploadExerciseToCategory : AppCompatActivity() {
 
     private var mStorageReference: StorageReference? = null
     private var mDatabaseReference: DatabaseReference? = null
-    private val GALLERY_REQESST = 1
+    private val GALLERY_REQUEST = 1
     private var imgUrl: Uri? = null
 
-    private var title : String? = null
+    private var title: String? = null
     private var spotsDialog: SpotsDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,7 +44,7 @@ class UploadExerciseToCategory : AppCompatActivity() {
             val galleryIntent = Intent(Intent.ACTION_GET_CONTENT)
             galleryIntent.type = "image/*"
             intent.action = Intent.ACTION_GET_CONTENT;
-            startActivityForResult(galleryIntent, GALLERY_REQESST)
+            startActivityForResult(galleryIntent, GALLERY_REQUEST)
         })
 
         uploadImageBtnCategory.setOnClickListener({
@@ -63,19 +59,21 @@ class UploadExerciseToCategory : AppCompatActivity() {
         val desc_val = uploadDescriptionCategory.text.toString().trim()
         val prompts_val = coachPromptUploadCategory.text.toString().trim()
         spotsDialog?.show()
-        if (!TextUtils.isEmpty(title_val) && !TextUtils.isEmpty(desc_val) && !TextUtils.isEmpty(prompts_val) && imgUrl != null) {
-            val filePath = mStorageReference!!.child("Exercises_img").child(imgUrl!!.lastPathSegment)
-            filePath.putFile(imgUrl!!).addOnSuccessListener { taskSnapshot ->
+        if (!TextUtils.isEmpty(title_val) && !TextUtils.isEmpty(desc_val) &&
+                !TextUtils.isEmpty(prompts_val) && imgUrl != null) {
+            val filePath = mStorageReference?.child("Exercises_img")
+                    ?.child(imgUrl!!.lastPathSegment)
+            filePath?.putFile(imgUrl!!)?.addOnSuccessListener { taskSnapshot ->
                 val dateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
                 val date = Date()
                 val downloadUrl = taskSnapshot.downloadUrl
-                val newPost = mDatabaseReference!!.child(title).child(title_val)
-                newPost.child("title").setValue(title_val)
-                newPost.child("description").setValue(desc_val)
-                newPost.child("prompts").setValue(prompts_val)
-                newPost.child("timestamp").setValue( dateFormat.format(date).toString())
-                newPost.child("image").setValue(downloadUrl!!.toString())
-                newPost.push()
+                val newPost = mDatabaseReference?.child(title)?.child(title_val)
+                newPost?.child("title")?.setValue(title_val)
+                newPost?.child("description")?.setValue(desc_val)
+                newPost?.child("prompts")?.setValue(prompts_val)
+                newPost?.child("timestamp")?.setValue( dateFormat.format(date).toString())
+                newPost?.child("image")?.setValue(downloadUrl.toString())
+                newPost?.push()
                 spotsDialog?.dismiss()
                 startActivity(Intent(this, ExerciseDetailsActivity::class.java)
                         .putExtra("title", title_val))
@@ -88,7 +86,7 @@ class UploadExerciseToCategory : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
-            if (requestCode == GALLERY_REQESST && resultCode == RESULT_OK) {
+            if (requestCode == GALLERY_REQUEST && resultCode == RESULT_OK) {
                 try {
                     imgUrl = data.data
                     val imageStream = contentResolver.openInputStream(imgUrl)
@@ -96,10 +94,12 @@ class UploadExerciseToCategory : AppCompatActivity() {
                     imageUploadViewCategory.setImageBitmap(selectedImage)
                 } catch (e: FileNotFoundException) {
                     e.printStackTrace()
-                    Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG)
+                            .show()
                 }
             } else {
-                Toast.makeText(this, "You haven't picked Image", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "You haven't picked Image", Toast.LENGTH_LONG)
+                        .show()
             }
     }
 
