@@ -96,8 +96,6 @@ class UploadExercise : AppCompatActivity() {
                 dbRef.push()
 
                 spotsDialog?.dismiss()
-                startActivity(Intent(this, HomeActivity::class.java)
-                        .putExtra("title", title))
                 finish()
             }
         } else {
@@ -145,12 +143,5 @@ class UploadExercise : AppCompatActivity() {
     //change font
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        startActivity(Intent(this, HomeActivity::class.java)
-                .putExtra("title", title))
-        finish()
     }
 }

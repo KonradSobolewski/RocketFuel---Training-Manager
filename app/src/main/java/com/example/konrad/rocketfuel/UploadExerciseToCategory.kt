@@ -17,6 +17,12 @@ import kotlinx.android.synthetic.main.activity_upload_exercise_to_category.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import java.text.SimpleDateFormat
 import java.util.*
+import android.graphics.BitmapFactory
+import android.graphics.Bitmap
+import android.R.attr.data
+import android.util.Log
+import java.io.FileNotFoundException
+
 
 class UploadExerciseToCategory : AppCompatActivity() {
 
@@ -41,6 +47,7 @@ class UploadExerciseToCategory : AppCompatActivity() {
         imageUploadViewCategory.setOnClickListener({
             val galleryIntent = Intent(Intent.ACTION_GET_CONTENT)
             galleryIntent.type = "image/*"
+            intent.action = Intent.ACTION_GET_CONTENT;
             startActivityForResult(galleryIntent, GALLERY_REQESST)
         })
 
@@ -81,17 +88,19 @@ class UploadExerciseToCategory : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode != RESULT_OK)
-            return
-        if (requestCode == GALLERY_REQESST) {
-            imgUrl = data.data
-            try {
-                imageUploadView.setImageURI(imgUrl)
-            } catch (e: OutOfMemoryError) {
-                e.fillInStackTrace()
+            if (requestCode == GALLERY_REQESST && resultCode == RESULT_OK) {
+                try {
+                    imgUrl = data.data
+                    val imageStream = contentResolver.openInputStream(imgUrl)
+                    val selectedImage = BitmapFactory.decodeStream(imageStream)
+                    imageUploadViewCategory.setImageBitmap(selectedImage)
+                } catch (e: FileNotFoundException) {
+                    e.printStackTrace()
+                    Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show()
+                }
+            } else {
+                Toast.makeText(this, "You haven't picked Image", Toast.LENGTH_LONG).show()
             }
-        }
     }
 
     //change font

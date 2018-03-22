@@ -43,10 +43,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compile 'com.jaredrummler:material-spinner:1.2.4'
-
     compile 'com.github.d-max:spots-dialog:0.7@aar'
 }
-
 
 
 apply plugin: 'com.android.application'

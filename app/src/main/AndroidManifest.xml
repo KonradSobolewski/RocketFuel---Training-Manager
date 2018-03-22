@@ -32,7 +32,7 @@
         <activity android:name=".RegisterActivity" />
         <activity android:name=".ExerciseDetailsActivity" />
         <activity android:name=".UploadExercise" />
-        <activity android:name=".UploadExerciseToCategory"></activity>
+        <activity android:name=".UploadExerciseToCategory"/>
     </application>
 
 </manifest>

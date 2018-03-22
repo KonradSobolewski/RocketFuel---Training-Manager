@@ -26,7 +26,8 @@
             android:adjustViewBounds="true"
             android:padding="5dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/add_btn" />
+            android:src="@drawable/add_btn"
+            android:maxHeight="250dp"/>
 
         <TextView
             android:id="@+id/post_desc"

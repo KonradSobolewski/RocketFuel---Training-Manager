@@ -24,6 +24,4 @@ class CategoryViewHolder(private var mview: View) : RecyclerView.ViewHolder(mvie
         val post_image: ImageView = mview.post_img
         Picasso.with(context).load(img).into(post_image)
     }
-
-
 }
