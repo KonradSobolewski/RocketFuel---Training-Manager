@@ -6,32 +6,33 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_exercise"
-            android:icon="@drawable/ic_add_floating"
+            android:icon="@drawable/ic_menu_add"
             android:title="@string/addExercise" />
+        <item
+            android:id="@+id/nav_training"
+            android:icon="@drawable/ic_menu_training"
+            android:title="@string/training" />
+        <item
+            android:id="@+id/nav_calender"
+            android:icon="@drawable/ic_menu_calender"
+            android:title="@string/calender" />
         <item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Gallery" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="@string/settings">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:id="@+id/nav_settings"
+                android:icon="@drawable/ic_menu_settings"
+                android:title="@string/account" />
             <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:id="@+id/nav_logout"
+                android:icon="@drawable/ic_menu_logout"
+                android:title="@string/logout" />
         </menu>
     </item>
 

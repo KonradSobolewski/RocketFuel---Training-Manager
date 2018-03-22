@@ -18,12 +18,17 @@ import com.example.konrad.rocketfuel.Adapters.MyFragmentAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_home.*
+import kotlinx.android.synthetic.main.activity_home.view.*
 import kotlinx.android.synthetic.main.activity_login.view.*
 import kotlinx.android.synthetic.main.app_bar_home.*
 import kotlinx.android.synthetic.main.content_home.*
 import kotlinx.android.synthetic.main.nav_header_home.*
 import kotlinx.android.synthetic.main.nav_header_home.view.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
+import android.graphics.drawable.Drawable
+import java.io.InputStream
+import java.net.URL
+
 
 class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -32,6 +37,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var mAuth: FirebaseAuth? = null
     var userName: String? = null
     var userEmail: String? = null
+    //var userImage: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,8 +81,21 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 userName = currentUserSnapshot?.child("Name")?.value.toString() + " " +
                         currentUserSnapshot?.child("Surname")?.value.toString()
                 userEmail = currentUserSnapshot?.child("Email")?.value.toString()
+//                userImage = currentUserSnapshot?.child("Image")?.value.toString()
                 nav_view.getHeaderView(0).navbarHeaderID.text = userName
                 nav_view.getHeaderView(0).navbarEmailID.text = userEmail
+                //Log.d("dupa",userImage)
+//                if(userImage != null){
+//                    try {
+//                        val photo = URL(userImage).getContent() as InputStream
+//                        val bg = Drawable.createFromStream(photo, null)
+//                        nav_view.getHeaderView(0).imagePersonIcon.background = bg
+//                    }catch (e: Exception){
+//                        e.printStackTrace()
+//                    }
+//
+//                }
+
             }
         })
     }
@@ -102,10 +121,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> signOut()
-            else -> super.onOptionsItemSelected(item)
-        }
+        return true
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -115,20 +131,20 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 startActivity(Intent(this,UploadExercise::class.java))
                 finish()
             }
+            R.id.nav_training -> {
+
+            }
+            R.id.nav_calender -> {
+
+            }
             R.id.nav_gallery -> {
 
             }
-            R.id.nav_slideshow -> {
+            R.id.nav_settings -> {
 
             }
-            R.id.nav_manage -> {
-
-            }
-            R.id.nav_share -> {
-
-            }
-            R.id.nav_send -> {
-
+            R.id.nav_logout-> {
+                signOut()
             }
         }
 

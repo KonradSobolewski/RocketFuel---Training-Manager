@@ -146,4 +146,11 @@ class UploadExercise : AppCompatActivity() {
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
     }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        startActivity(Intent(this, HomeActivity::class.java)
+                .putExtra("title", title))
+        finish()
+    }
 }

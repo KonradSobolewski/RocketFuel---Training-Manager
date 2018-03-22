@@ -201,9 +201,11 @@ class LoginActivity : AppCompatActivity() {
                                         val personName = acct.givenName
                                         val personFamilyName = acct.familyName
                                         val personEmail = acct.email
+                                       // val personImg = acct.photoUrl
                                         databaseRef2.child("Name").setValue(personName)
                                         databaseRef2.child("Surname").setValue(personFamilyName)
                                         databaseRef2.child("Email").setValue(personEmail)
+                                       // databaseRef2.child("Image").setValue(personImg)
                                         databaseRef2.push()
                                     }
                                 }

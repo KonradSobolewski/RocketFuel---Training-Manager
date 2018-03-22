@@ -7,12 +7,12 @@
     <color name="deepPurple">#7B1FA2</color>
     <color name="deepOrange">#F57C00</color>
     <color name="deepBlue">#8de5ff</color>
-    <color name="deepGrey">#4F4858</color>
+    <color name="deepGrey">#ca4198</color>
     <color name="darkLight">#98A2A1</color>
-    <color name="oceanGreen">#006885</color>
-    <color name="darkGreen">#263A3B</color>
-    <color name="darkBrown">#7D6A5B</color>
-    <color name="deepGreen">#3A6463</color>
+    <color name="oceanGreen">#22cfff</color>
+    <color name="darkGreen">#0b9741</color>
+    <color name="darkBrown">#efbf7c</color>
+    <color name="deepGreen">#6cbebc</color>
 
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorTransparentWhite">#CCCCCC</color>
