@@ -32,7 +32,8 @@
         <activity android:name=".RegisterActivity" />
         <activity android:name=".ExerciseDetailsActivity" />
         <activity android:name=".UploadExercise" />
-        <activity android:name=".UploadExerciseToCategory"/>
+        <activity android:name=".UploadExerciseToCategory" />
+        <activity android:name=".ShowExercise"></activity>
     </application>
 
 </manifest>

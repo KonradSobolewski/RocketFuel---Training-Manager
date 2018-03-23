@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_margin="15dp"
+    tools:context="com.example.konrad.rocketfuel.ShowExercise">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/post_title_exe_details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Post title"
+            android:textSize="27dp"
+            android:textStyle="bold"
+            android:transitionName="exercise1"/>
+
+        <TextView
+            android:id="@+id/post_timestamp_exe_details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="end|right"
+            android:padding="10dp"
+            android:text="Post time"
+            android:textSize="14sp"
+            android:transitionName="exercise2"/>
+
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/post_img_exe_details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:padding="5dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/add_btn"
+        android:maxHeight="250dp"
+        android:transitionName="exercise3"/>
+
+    <TextView
+        android:id="@+id/post_desc_exe_details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_marginVertical="10dp"
+        android:paddingVertical="10dp"
+        android:text="Post desc" />
+
+    <TextView
+        android:id="@+id/post_prompts_exe_details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:paddingVertical="10dp"
+        android:text="Post desc" />
+
+
+</LinearLayout>

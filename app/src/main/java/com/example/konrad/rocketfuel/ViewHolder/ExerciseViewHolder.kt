@@ -14,16 +14,6 @@ class ExerciseViewHolder(private var mview: View) : RecyclerView.ViewHolder(mvie
         post_title.text = title
     }
 
-    fun setDesc(description: String) {
-        val post_description = mview.post_desc_exe
-        post_description.text = description
-    }
-
-    fun setPrompt(prompts: String) {
-        val post_prompt = mview.post_prompts_exe
-        post_prompt.text = prompts
-    }
-
     fun setTimestamp(timestamp: String) {
         val post_timestamp = mview.post_timestamp_exe
         post_timestamp.text = timestamp
