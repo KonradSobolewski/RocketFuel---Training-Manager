@@ -63,27 +63,24 @@ class LoginActivity : AppCompatActivity() {
             )
         }
 
-        val isRegisterDone: Boolean = intent.getBooleanExtra("registerFinishedFlag",
-                false)
-
-        if (isRegisterDone) {
-            Toast.makeText(this, "Register succeeded", Toast.LENGTH_SHORT).show()
-        }
-
         dbRef = FirebaseDatabase.getInstance().reference.child("Users")
         mAuth = FirebaseAuth.getInstance()
 
         mListener = FirebaseAuth.AuthStateListener { auth ->
             val user = auth.currentUser
             if (user != null) {
-                //TODO
-                //Kamil tutaj wchodzi po rejestacji xd popraw
                 val homeIntent = Intent(this, HomeActivity::class.java)
                 startActivity(homeIntent)
                 finish()
             }
         }
 
+        val isRegisterDone: Boolean = intent.getBooleanExtra("registerFinishedFlag",
+                false)
+
+        if (isRegisterDone) {
+            Toast.makeText(this, "Register succeeded", Toast.LENGTH_SHORT).show()
+        }
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -135,14 +132,14 @@ class LoginActivity : AppCompatActivity() {
                                         this@LoginActivity, "Please verify your email",
                                         Toast.LENGTH_SHORT
                                 ).show()
-                            } else {
-                                startActivity(
-                                        Intent(
-                                                this@LoginActivity, HomeActivity::class.java
-                                        ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                                )
-                                finish()
+                                return@addOnCompleteListener
                             }
+                            startActivity(
+                                    Intent(
+                                    this@LoginActivity, HomeActivity::class.java
+                                    ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                            )
+                            finish()
                         } else {
                             Toast.makeText(
                                     this@LoginActivity, "Incorrect credentials",
