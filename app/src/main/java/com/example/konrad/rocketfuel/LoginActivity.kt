@@ -75,9 +75,7 @@ class LoginActivity : AppCompatActivity() {
 
         mListener = FirebaseAuth.AuthStateListener { auth ->
             val user = auth.currentUser
-            if (user != null) {
-                //TODO
-                //Kamil tutaj wchodzi po rejestacji xd popraw
+            if (user != null && user.isEmailVerified) {
                 val homeIntent = Intent(this, HomeActivity::class.java)
                 startActivity(homeIntent)
                 finish()
