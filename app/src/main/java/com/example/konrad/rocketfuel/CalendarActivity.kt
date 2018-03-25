@@ -9,8 +9,10 @@ import android.net.ConnectivityManager
 import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.widget.ProgressBar
+import com.example.konrad.rocketfuel.Adapters.CalendarAdapter
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.api.client.extensions.android.http.AndroidHttp
@@ -26,11 +28,13 @@ import com.google.api.services.calendar.Calendar
 import com.google.api.services.calendar.CalendarScopes
 import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.EventDateTime
+import kotlinx.android.synthetic.main.activity_calendar.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
@@ -43,12 +47,20 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
 
     private var mProgress: ProgressBar? = null
 
+    private var calenderItems : ArrayList<CalenderItem>? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_calendar)
         mCredential = GoogleAccountCredential.usingOAuth2(
                 this, listOf(CalendarScopes.CALENDAR)
         ).setBackOff(ExponentialBackOff())
+
+        recycleCalender.setHasFixedSize(true)
+        recycleCalender.layoutManager = LinearLayoutManager(this)
+//        TODO z api kalendarza wczytaj dane do obiektów CalenderItem i włóż je do listy , potem odkomentuj to i powinno dzialac
+//        val mAdapter : CalendarAdapter = CalendarAdapter(this, calenderItems)
+//        recycleCalender.adapter = mAdapter
     }
 
     private fun getResultsFromApi() {
@@ -250,9 +262,5 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
             } else {
             }
         }
-
-
-
     }
-
 }
