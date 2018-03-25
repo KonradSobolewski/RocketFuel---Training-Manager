@@ -1,12 +1,9 @@
 package com.example.konrad.rocketfuel
 
-import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
 import android.util.Log
@@ -29,8 +26,8 @@ class LoginActivity : AppCompatActivity() {
 
     private var animationDrawable: AnimationDrawable? = null
 
-    private var dbRef: DatabaseReference? = null
-    private var mAuth: FirebaseAuth? = null
+    private val dbRef: DatabaseReference = FirebaseDatabase.getInstance().reference.child("Users")
+    private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
     private var mListener: FirebaseAuth.AuthStateListener? = null
 
@@ -41,27 +38,6 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-        //Set permissions
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.INTERNET)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                    this, arrayOf(Manifest.permission.INTERNET), 1
-            )
-        }
-
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                    this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 2
-            )
-        }
-
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                    this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 3
-            )
-        }
 
         val isRegisterDone: Boolean = intent.getBooleanExtra("registerFinishedFlag",
                 false)
@@ -69,9 +45,6 @@ class LoginActivity : AppCompatActivity() {
         if (isRegisterDone) {
             Toast.makeText(this, "Register succeeded", Toast.LENGTH_SHORT).show()
         }
-
-        dbRef = FirebaseDatabase.getInstance().reference.child("Users")
-        mAuth = FirebaseAuth.getInstance()
 
         mListener = FirebaseAuth.AuthStateListener { auth ->
             val user = auth.currentUser
@@ -118,17 +91,20 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun login(email: String, pass: String) {
-        if (TextUtils.isEmpty(email) || TextUtils.isEmpty(pass)) {
+        if (
+                TextUtils.isEmpty(email) ||
+                TextUtils.isEmpty(pass)
+        ) {
             Toast.makeText(this, "Incorrect credentials", Toast.LENGTH_SHORT).show()
             return
         }
         else {
             spotsDialog?.show()
-            mAuth?.signInWithEmailAndPassword(email, pass)
-                    ?.addOnCompleteListener(this) { task ->
+            mAuth.signInWithEmailAndPassword(email, pass)
+                    .addOnCompleteListener(this) { task ->
                         spotsDialog?.dismiss()
                         if (task.isSuccessful) {
-                            if (mAuth?.currentUser?.isEmailVerified != true) {
+                            if (mAuth.currentUser?.isEmailVerified != true) {
                                 Toast.makeText(
                                         this@LoginActivity, "Please verify your email",
                                         Toast.LENGTH_SHORT
@@ -173,14 +149,14 @@ class LoginActivity : AppCompatActivity() {
 
     private fun firebaseAuthWithGoogle(account: GoogleSignInAccount) {
         val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-        mAuth?.signInWithCredential(credential)
-                ?.addOnCompleteListener(this) { task->
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this) { task->
                     spotsDialog?.dismiss()
 
                     if(task.isSuccessful) {
-                        val userId: String? = mAuth?.currentUser?.uid
+                        val userId: String = mAuth.currentUser?.uid ?: ""
                         val acct = GoogleSignIn.getLastSignedInAccount(this)
-                        dbRef?.addValueEventListener(object : ValueEventListener{
+                        dbRef.addValueEventListener(object : ValueEventListener{
                             override fun onCancelled(p0: DatabaseError?) {
                                 Log.e("Logout", "error!")
                             }
@@ -188,7 +164,7 @@ class LoginActivity : AppCompatActivity() {
                             override fun onDataChange(p0: DataSnapshot?) {
                                 if(p0?.hasChild(userId) != true){
                                     if (acct != null ) {
-                                        val databaseRef2: DatabaseReference? = dbRef?.child(userId)
+                                        val databaseRef2: DatabaseReference? = dbRef.child(userId)
                                         val personName = acct.givenName
                                         val personFamilyName = acct.familyName
                                         val personEmail = acct.email
@@ -227,7 +203,6 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-
-        mAuth?.addAuthStateListener(mListener!!)
+        mAuth.addAuthStateListener(mListener!!)
     }
 }

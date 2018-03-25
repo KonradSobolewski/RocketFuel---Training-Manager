@@ -23,23 +23,19 @@ import kotlinx.android.synthetic.main.nav_header_home.view.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import com.squareup.picasso.Picasso
 
-
 class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    private var mDatabase: DatabaseReference? = null
+    private val mDatabase: DatabaseReference = FirebaseDatabase.getInstance().reference
+    private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    private var mAuth: FirebaseAuth? = null
-    var userName: String? = null
-    var userEmail: String? = null
-    var userImage: String? = null
+    private var userName: String = ""
+    private var userEmail: String = ""
+    private var userImage: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
         setSupportActionBar(toolbar)
-
-        mDatabase = FirebaseDatabase.getInstance().reference
-        mAuth = FirebaseAuth.getInstance()
 
         //Add adapter to pageView
         val myFragAdapter = MyFragmentAdapter(supportFragmentManager, this)
@@ -64,21 +60,24 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         nav_view.setNavigationItemSelectedListener(this)
 
-        val usersReference = mDatabase?.child("Users")
+        val usersReference = mDatabase.child("Users")
         usersReference?.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(error: DatabaseError?) {
                 println(error?.message)
             }
 
             override fun onDataChange(snapshot: DataSnapshot?) {
-                val currentUserSnapshot: DataSnapshot? = snapshot?.child(mAuth?.currentUser?.uid)
-                userName = currentUserSnapshot?.child("Name")?.value.toString() + " " +
-                        currentUserSnapshot?.child("Surname")?.value.toString()
-                userEmail = currentUserSnapshot?.child("Email")?.value.toString()
-                userImage = currentUserSnapshot?.child("Image")?.value.toString()
+                val userUid = mAuth.currentUser?.uid ?: ""
+                if (snapshot?.hasChild(userUid) != true)
+                    return
+                val currentUserSnapshot: DataSnapshot = snapshot.child(userUid)
+                userName = currentUserSnapshot.child("Name").value.toString() + " " +
+                        currentUserSnapshot.child("Surname").value.toString()
+                userEmail = currentUserSnapshot.child("Email").value.toString()
+                userImage = currentUserSnapshot.child("Image").value.toString()
                 nav_view.getHeaderView(0).navbarHeaderID.text = userName
                 nav_view.getHeaderView(0).navbarEmailID.text = userEmail
-                if (userImage != null)
+                if (userImage != "")
                     Picasso.with(applicationContext)
                             .load(userImage)
                             .into(nav_view.getHeaderView(0).imagePersonIcon)

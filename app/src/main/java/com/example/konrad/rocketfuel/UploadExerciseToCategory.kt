@@ -1,49 +1,46 @@
 package com.example.konrad.rocketfuel
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.net.Uri
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
 import android.widget.Toast
-import com.google.firebase.database.*
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import dmax.dialog.SpotsDialog
 import kotlinx.android.synthetic.main.activity_upload_exercise_to_category.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
+import java.io.FileNotFoundException
 import java.text.SimpleDateFormat
 import java.util.*
-import android.graphics.BitmapFactory
-import java.io.FileNotFoundException
 
 
 class UploadExerciseToCategory : AppCompatActivity() {
 
-    private var mStorageReference: StorageReference? = null
-    private var mDatabaseReference: DatabaseReference? = null
+    private val mStorageReference: StorageReference = FirebaseStorage.getInstance().reference
+    private val mDatabaseReference: DatabaseReference = FirebaseDatabase.getInstance().reference
     private val GALLERY_REQUEST = 1
-    private var imgUrl: Uri? = null
+    private var imgUrl: Uri = Uri.EMPTY
 
-    private var title: String? = null
+    private var title: String = ""
     private var spotsDialog: SpotsDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_upload_exercise_to_category)
-        title = intent.extras.getString("title")
-
-        mStorageReference = FirebaseStorage.getInstance().reference
-        mDatabaseReference = FirebaseDatabase.getInstance().reference.child("Exercises")
+        title = intent.extras.getString("title") ?: ""
 
         categoryName.text = title
 
         imageUploadViewCategory.setOnClickListener({
             val galleryIntent = Intent(Intent.ACTION_GET_CONTENT)
             galleryIntent.type = "image/*"
-            intent.action = Intent.ACTION_GET_CONTENT;
+            intent.action = Intent.ACTION_GET_CONTENT
             startActivityForResult(galleryIntent, GALLERY_REQUEST)
         })
 
@@ -53,35 +50,41 @@ class UploadExerciseToCategory : AppCompatActivity() {
         spotsDialog = SpotsDialog(this,R.style.DialogStyle)
     }
 
-    @SuppressLint("SimpleDateFormat")
     private fun startPosting() {
-        val title_val = uploadTitleCategory.text.toString().trim()
-        val desc_val = uploadDescriptionCategory.text.toString().trim()
-        val prompts_val = coachPromptUploadCategory.text.toString().trim()
+        val exerciseReference: DatabaseReference = mDatabaseReference.child("Exercises")
+        val titleVal = uploadTitleCategory.text.toString().trim()
+        val descVal = uploadDescriptionCategory.text.toString().trim()
+        val promptsVal = coachPromptUploadCategory.text.toString().trim()
+
         spotsDialog?.show()
-        if (!TextUtils.isEmpty(title_val) && !TextUtils.isEmpty(desc_val) &&
-                !TextUtils.isEmpty(prompts_val) && imgUrl != null) {
-            val filePath = mStorageReference?.child("Exercises_img")
-                    ?.child(imgUrl!!.lastPathSegment)
-            filePath?.putFile(imgUrl!!)?.addOnSuccessListener { taskSnapshot ->
-                val dateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
-                val date = Date()
-                val downloadUrl = taskSnapshot.downloadUrl
-                val newPost = mDatabaseReference?.child(title)?.child(title_val)
-                newPost?.child("title")?.setValue(title_val)
-                newPost?.child("description")?.setValue(desc_val)
-                newPost?.child("prompts")?.setValue(prompts_val)
-                newPost?.child("timestamp")?.setValue( dateFormat.format(date).toString())
-                newPost?.child("image")?.setValue(downloadUrl.toString())
-                newPost?.push()
-                spotsDialog?.dismiss()
-                startActivity(Intent(this, ExerciseDetailsActivity::class.java)
-                        .putExtra("title", title_val))
-                finish()
-            }
-        }else{
+
+        if (
+                TextUtils.isEmpty(titleVal) ||
+                TextUtils.isEmpty(descVal) ||
+                TextUtils.isEmpty(promptsVal) ||
+                imgUrl == Uri.EMPTY
+        ) {
             spotsDialog?.dismiss()
             Toast.makeText(this,"Complete all fields",Toast.LENGTH_SHORT).show()
+        }
+        else {
+            val filePath = mStorageReference.child("Exercises_img").child(imgUrl.lastPathSegment)
+            filePath.putFile(imgUrl).addOnSuccessListener { taskSnapshot ->
+                val dateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.ENGLISH)
+                val date = Date()
+                val downloadUrl = taskSnapshot.downloadUrl
+                val newPost: DatabaseReference = exerciseReference.child(title).child(titleVal)
+                newPost.child("title").setValue(titleVal)
+                newPost.child("description").setValue(descVal)
+                newPost.child("prompts").setValue(promptsVal)
+                newPost.child("timestamp").setValue( dateFormat.format(date).toString())
+                newPost.child("image").setValue(downloadUrl.toString())
+                newPost.push()
+                spotsDialog?.dismiss()
+                startActivity(Intent(this, ExerciseDetailsActivity::class.java)
+                        .putExtra("title", titleVal))
+                finish()
+            }
         }
     }
 
@@ -97,7 +100,8 @@ class UploadExerciseToCategory : AppCompatActivity() {
                     Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG)
                             .show()
                 }
-            } else {
+            }
+            else {
                 Toast.makeText(this, "You haven't picked Image", Toast.LENGTH_LONG)
                         .show()
             }

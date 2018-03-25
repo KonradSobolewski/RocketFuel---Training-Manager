@@ -2,9 +2,9 @@ package com.example.konrad.rocketfuel
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
+import android.support.v4.app.ActivityOptionsCompat
+import android.support.v4.util.Pair
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
@@ -17,17 +17,11 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_exercise_details.*
 import kotlinx.android.synthetic.main.content_exercise_details.*
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
-import android.support.v4.app.ActivityOptionsCompat
-import android.support.v4.util.Pair
-import android.util.Log
 import kotlinx.android.synthetic.main.exercise_row.view.*
-import java.io.ByteArrayOutputStream
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
 class ExerciseDetailsActivity : AppCompatActivity() {
-
     private var mDatabaseReference: DatabaseReference? = null
-
     private var title : String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,7 +38,7 @@ class ExerciseDetailsActivity : AppCompatActivity() {
 
         fab.setOnClickListener {
             startActivity(Intent(this,UploadExerciseToCategory::class.java)
-                    .putExtra("title",title))
+                    .putExtra("title", title))
         }
     }
 
@@ -68,7 +62,9 @@ class ExerciseDetailsActivity : AppCompatActivity() {
                 holder?.setTimestamp(model?.timestamp ?: "")
                 holder?.setImg(this@ExerciseDetailsActivity, model?.image ?: "")
                 holder?.itemView?.setOnClickListener {
-                    val intent = Intent(this@ExerciseDetailsActivity,ShowExercise::class.java)
+                    val intent = Intent(
+                            this@ExerciseDetailsActivity, ShowExercise::class.java
+                    )
                     intent.putExtra("title",it.post_title_exe.text)
                     intent.putExtra("category",title)
 

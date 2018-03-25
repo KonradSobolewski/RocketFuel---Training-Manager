@@ -57,8 +57,8 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
         } else if (mCredential?.selectedAccountName == null) {
             chooseAccount()
         } else if (!isDeviceOnline()) {}
-        else {
-            MakeRequestTask(mCredential!!).execute()
+        else if (mCredential != null){
+            MakeRequestTask(mCredential as GoogleAccountCredential).execute()
         }
     }
 
@@ -162,8 +162,16 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
             credential: GoogleAccountCredential
     ) : AsyncTask<Void, Void, List<String>>() {
 
-        private var mService: Calendar? = null
+        private val mService: Calendar
         private var mLastError: Exception? = null
+
+        init {
+            val transport: HttpTransport = AndroidHttp.newCompatibleTransport()
+            val jsonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
+            mService = Calendar.Builder(transport, jsonFactory, credential)
+                    .setApplicationName("Google Calendar API Android Quickstart")
+                    .build()
+        }
 
         override fun doInBackground(vararg params: Void?): List<String> {
             return try {
@@ -179,7 +187,7 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
         private fun getDataFromApi(): MutableList<String> {
             val now = DateTime(System.currentTimeMillis())
             val eventStrings: MutableList<String> = mutableListOf()
-            val events = mService?.events()?.list("primary")
+            val events = mService.events()?.list("primary")
                     ?.setMaxResults(10)
                     ?.setTimeMin(now)
                     ?.setOrderBy("startTime")
@@ -210,7 +218,7 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
                     .setEnd(EventDateTime().setDate(endDateTime))
                     .setSummary("klata kurła")
                     .setDescription("sobek ciągnie druta")
-            mService?.events()?.insert("primary", event)?.execute()
+            mService.events()?.insert("primary", event)?.execute()
         }
 
 
@@ -244,13 +252,7 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
         }
 
 
-        init {
-            val transport: HttpTransport = AndroidHttp.newCompatibleTransport()
-            val jsonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
-            mService = Calendar.Builder(transport, jsonFactory, credential)
-                    .setApplicationName("Google Calendar API Android Quickstart")
-                    .build()
-        }
+
     }
 
 }

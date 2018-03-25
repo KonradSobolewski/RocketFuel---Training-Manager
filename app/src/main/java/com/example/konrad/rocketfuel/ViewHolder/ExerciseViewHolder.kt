@@ -8,19 +8,18 @@ import kotlinx.android.synthetic.main.exercise_row.view.*
 
 
 class ExerciseViewHolder(private var mview: View) : RecyclerView.ViewHolder(mview) {
-
     fun setTitle(title: String) {
-        val post_title = mview.post_title_exe
-        post_title.text = title
+        val postTitle = mview.post_title_exe
+        postTitle.text = title
     }
 
     fun setTimestamp(timestamp: String) {
-        val post_timestamp = mview.post_timestamp_exe
-        post_timestamp.text = timestamp
+        val postTimestamp = mview.post_timestamp_exe
+        postTimestamp.text = timestamp
     }
 
     fun setImg(context: Context, image: String) {
-        val post_image = mview.post_img_exe
-        Picasso.with(context).load(image).into(post_image)
+        val postImage = mview.post_img_exe
+        Picasso.with(context).load(image).into(postImage)
     }
 }

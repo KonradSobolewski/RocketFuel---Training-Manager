@@ -11,17 +11,17 @@ import kotlinx.android.synthetic.main.category_row.view.*
 class CategoryViewHolder(private var mview: View) : RecyclerView.ViewHolder(mview){
 
     fun setTitle(title : String){
-        val post_title: TextView = mview.post_title
-        post_title.text = title
+        val postTitle: TextView = mview.post_title
+        postTitle.text = title
     }
 
-    fun setDescritopn(description : String){
-        val post_desc: TextView = mview.post_desc
-        post_desc.text = description
+    fun setDescription(description : String){
+        val postDesc: TextView = mview.post_desc
+        postDesc.text = description
     }
 
     fun setImage(context: Context, img : String){
-        val post_image: ImageView = mview.post_img
-        Picasso.with(context).load(img).into(post_image)
+        val postImage: ImageView = mview.post_img
+        Picasso.with(context).load(img).into(postImage)
     }
 }

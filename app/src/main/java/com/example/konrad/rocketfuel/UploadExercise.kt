@@ -19,22 +19,19 @@ import kotlin.collections.ArrayList
 
 class UploadExercise : AppCompatActivity() {
 
-    private var mStorageReference: StorageReference? = null
-    private var mDatabaseReference: DatabaseReference? = null
+    private val mStorageReference: StorageReference = FirebaseStorage.getInstance().reference
+    private val mDatabaseReference: DatabaseReference = FirebaseDatabase.getInstance().reference
     private val GALLERY_REQUEST = 1
-    private var imgUrl: Uri? = null
+    private var imgUrl: Uri = Uri.EMPTY
 
-    private var spinnerData:ArrayList<String>? = ArrayList()
+    private var spinnerData: ArrayList<String> = ArrayList()
 
-    private var categoryIdSelect : String? = null
+    private var categoryIdSelect : String = ""
     private var spotsDialog: SpotsDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_upload_exercise)
-
-        mStorageReference = FirebaseStorage.getInstance().reference
-        mDatabaseReference = FirebaseDatabase.getInstance().reference.child("Exercises")
 
         imageUploadView.setOnClickListener({
             val galleryIntent = Intent(Intent.ACTION_GET_CONTENT)
@@ -51,38 +48,42 @@ class UploadExercise : AppCompatActivity() {
     }
 
     private fun startPosting() {
-        val title_val = uploadTitle.text.toString().trim()
-        val desc_val = uploadDescription.text.toString().trim()
-        val prompts_val = coachPromptUpload.text.toString().trim()
+        val exerciseReference: DatabaseReference = mDatabaseReference.child("Exercises")
+        val titleVal = uploadTitle.text.toString().trim()
+        val descVal = uploadDescription.text.toString().trim()
+        val promptsVal = coachPromptUpload.text.toString().trim()
         categoryIdSelect = spinner.text.toString()
 
-        val dbRefCategory: DatabaseReference? = mDatabaseReference?.child(categoryIdSelect)
-        dbRefCategory?.addListenerForSingleValueEvent(object : ValueEventListener {
+        val dbRefCategory: DatabaseReference = exerciseReference.child(categoryIdSelect)
+        dbRefCategory.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(error: DatabaseError?) {
                 println(error?.message)
             }
             override fun onDataChange(snapshot: DataSnapshot?) {
-                if(snapshot?.hasChild(title_val) == true) {
+                if(snapshot?.hasChild(titleVal) == true) {
                     Toast.makeText(
                             this@UploadExercise, "Exercise exists", Toast.LENGTH_SHORT
                     ).show()
                 }
                 else {
-                    postData(title_val, desc_val, prompts_val, dbRefCategory.child(title_val))
+                    postData(titleVal, descVal, promptsVal, dbRefCategory.child(titleVal))
                 }
             }
         })
-
     }
 
     private fun postData(title: String, description: String, hints: String,
                          dbRef: DatabaseReference) {
         spotsDialog?.show()
-        if (!TextUtils.isEmpty(title) && !TextUtils.isEmpty(description)
-                && !TextUtils.isEmpty(hints) && imgUrl != null) {
-            val filePath = mStorageReference!!.child("Exercises_img")
-                    .child(imgUrl!!.lastPathSegment)
-            filePath.putFile(imgUrl!!).addOnSuccessListener { taskSnapshot ->
+        if (
+                TextUtils.isEmpty(title) || TextUtils.isEmpty(description) || TextUtils.isEmpty(hints) || imgUrl == Uri.EMPTY
+        ) {
+            spotsDialog?.dismiss()
+            Toast.makeText(this,"Complete all fields", Toast.LENGTH_SHORT).show()
+        }
+        else {
+            val filePath = mStorageReference.child("Exercises_img").child(imgUrl.lastPathSegment)
+            filePath.putFile(imgUrl).addOnSuccessListener { taskSnapshot ->
                 val dateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.ENGLISH)
                 val date = Date()
                 val downloadUrl = taskSnapshot.downloadUrl
@@ -96,9 +97,6 @@ class UploadExercise : AppCompatActivity() {
                 spotsDialog?.dismiss()
                 finish()
             }
-        } else {
-            spotsDialog?.dismiss()
-            Toast.makeText(this,"Complete all fields", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -113,11 +111,11 @@ class UploadExercise : AppCompatActivity() {
         override fun onDataChange(p0: DataSnapshot?) {
             p0?.children
                     ?.map { it.key.toString() }
-                    ?.forEach { spinnerData!!.add(it) }
+                    ?.forEach { spinnerData.add(it) }
 
-            spinner.setItems(spinnerData!!)
+            spinner.setItems(spinnerData)
             spinner.setOnItemSelectedListener { _, position, _, _ ->
-                categoryIdSelect = spinnerData!![position]
+                categoryIdSelect = spinnerData[position]
             }
 
         }

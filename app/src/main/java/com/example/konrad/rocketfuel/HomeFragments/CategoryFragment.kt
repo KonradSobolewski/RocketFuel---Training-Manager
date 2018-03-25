@@ -17,7 +17,6 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import kotlinx.android.synthetic.main.fragment_category.*
 
 class CategoryFragment : Fragment() {
 
@@ -30,15 +29,15 @@ class CategoryFragment : Fragment() {
 
     private var recyclerView: RecyclerView? = null
 
-    private var mDatabaseReference: DatabaseReference =
+    private val mDatabaseReference: DatabaseReference =
             FirebaseDatabase.getInstance().reference.child("Category")
 
-    private var options: FirebaseRecyclerOptions<CategoryItem> =
+    private val options: FirebaseRecyclerOptions<CategoryItem> =
             FirebaseRecyclerOptions.Builder<CategoryItem>()
-                    .setQuery(mDatabaseReference,CategoryItem::class.java)
+                    .setQuery(mDatabaseReference, CategoryItem::class.java)
                     .build()
 
-    private var mAdapter: FirebaseRecyclerAdapter<CategoryItem, CategoryViewHolder> =
+    private val mAdapter: FirebaseRecyclerAdapter<CategoryItem, CategoryViewHolder> =
             object: FirebaseRecyclerAdapter<CategoryItem,CategoryViewHolder>(options) {
 
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): CategoryViewHolder {
@@ -50,7 +49,7 @@ class CategoryFragment : Fragment() {
         override fun onBindViewHolder(holder: CategoryViewHolder?, position: Int,
                                       model: CategoryItem?) {
             holder?.setTitle(model?.title ?: "")
-            holder?.setDescritopn("Description: " + model?.description)
+            holder?.setDescription("Description: " + model?.description)
             holder?.setImage(context, model?.image ?: "")
             Log.d("position", Integer.toString(position))
 

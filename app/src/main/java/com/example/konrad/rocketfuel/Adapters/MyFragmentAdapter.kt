@@ -11,7 +11,6 @@ import com.example.konrad.rocketfuel.HomeFragments.RecentFragment
  * Created by Konrad on 18.03.2018.
  */
 class MyFragmentAdapter(fm: FragmentManager, context: Context) : FragmentPagerAdapter(fm) {
-
     private var context: Context? = context
 
     override fun getItem(position: Int): android.support.v4.app.Fragment? {
