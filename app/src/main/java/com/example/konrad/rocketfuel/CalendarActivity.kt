@@ -38,6 +38,8 @@ import kotlin.collections.ArrayList
 
 
 class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
+    enum class CalendarOperation {ReadEvents, CreateEvent}
+
     private var mCredential: GoogleAccountCredential? = null
     private val REQUEST_ACCOUNT_PICKER = 1000
     private val REQUEST_AUTHORIZATION = 1001
@@ -47,7 +49,7 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
 
     private var mProgress: ProgressBar? = null
 
-    private var calenderItems : ArrayList<CalenderItem>? = null
+    private var calendarItems: ArrayList<CalendarItem> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,19 +60,26 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
 
         recycleCalender.setHasFixedSize(true)
         recycleCalender.layoutManager = LinearLayoutManager(this)
-//        TODO z api kalendarza wczytaj dane do obiektów CalenderItem i włóż je do listy , potem odkomentuj to i powinno dzialac
-//        val mAdapter : CalendarAdapter = CalendarAdapter(this, calenderItems)
-//        recycleCalender.adapter = mAdapter
+
+        runGoogleCalendarEvent(CalendarOperation.ReadEvents)
     }
 
-    private fun getResultsFromApi() {
+    private fun runGoogleCalendarEvent(calendarOperation: CalendarOperation,
+                                       calendarItem: CalendarItem = CalendarItem()) {
         if (!isGooglePlayServicesAvailable()) {
             acquireGooglePlayServices()
-        } else if (mCredential?.selectedAccountName == null) {
+        }
+        else if (mCredential?.selectedAccountName == null) {
             chooseAccount()
-        } else if (!isDeviceOnline()) {}
-        else if (mCredential != null){
-            MakeRequestTask(mCredential as GoogleAccountCredential).execute()
+        }
+        else if (!isDeviceOnline()) {
+        }
+        else if (mCredential != null) {
+            MakeRequestTask(
+                    mCredential as GoogleAccountCredential,
+                    calendarOperation,
+                    calendarItem
+            ).execute()
         }
     }
 
@@ -100,18 +109,18 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
 
     @AfterPermissionGranted(1003)
     private fun chooseAccount() {
-        if (EasyPermissions.hasPermissions(
-                        this, Manifest.permission.GET_ACCOUNTS)) {
+        if (EasyPermissions.hasPermissions(this, Manifest.permission.GET_ACCOUNTS)) {
             val accountName = getPreferences(Context.MODE_PRIVATE)
                     .getString(PREF_ACCOUNT_NAME, null)
             if (accountName != null) {
                 mCredential?.selectedAccountName = accountName
-                getResultsFromApi()
+                runGoogleCalendarEvent(CalendarOperation.ReadEvents)
             } else {
                 // Start a dialog from which the user can choose an account
                 startActivityForResult(
                         mCredential?.newChooseAccountIntent(),
-                        REQUEST_ACCOUNT_PICKER)
+                        REQUEST_ACCOUNT_PICKER
+                )
             }
         } else {
             // Request the GET_ACCOUNTS permission via a user dialog
@@ -133,9 +142,9 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
             requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
-            REQUEST_GOOGLE_PLAY_SERVICES -> if (resultCode != Activity.RESULT_OK) {
-            } else {
-                getResultsFromApi()
+            REQUEST_GOOGLE_PLAY_SERVICES -> if (resultCode != Activity.RESULT_OK) {}
+            else {
+                runGoogleCalendarEvent(CalendarOperation.ReadEvents)
             }
             REQUEST_ACCOUNT_PICKER -> if (resultCode == Activity.RESULT_OK && data != null &&
                     data.extras != null) {
@@ -146,11 +155,11 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
                     editor.putString(PREF_ACCOUNT_NAME, accountName)
                     editor.apply()
                     mCredential?.selectedAccountName = accountName
-                    getResultsFromApi()
+                    runGoogleCalendarEvent(CalendarOperation.ReadEvents)
                 }
             }
             REQUEST_AUTHORIZATION -> if (resultCode == Activity.RESULT_OK) {
-                getResultsFromApi()
+                runGoogleCalendarEvent(CalendarOperation.ReadEvents)
             }
         }
     }
@@ -170,13 +179,13 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>?) {}
 
 
-    inner class MakeRequestTask(
-            credential: GoogleAccountCredential
-    ) : AsyncTask<Void, Void, List<String>>() {
+    inner class MakeRequestTask(credential: GoogleAccountCredential,
+                                private val calendarOperation: CalendarOperation,
+                                private val calendarItem: CalendarItem = CalendarItem())
+        : AsyncTask<Void, Void, List<String>>() {
 
         private val mService: Calendar
         private var mLastError: Exception? = null
-
         init {
             val transport: HttpTransport = AndroidHttp.newCompatibleTransport()
             val jsonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
@@ -187,8 +196,10 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
 
         override fun doInBackground(vararg params: Void?): List<String> {
             return try {
-                addEventToCalendar()
-                getDataFromApi()
+                when (calendarOperation) {
+                    CalendarOperation.ReadEvents -> getDataFromApi()
+                    CalendarOperation.CreateEvent -> addEventToCalendar(calendarItem)
+                }
             } catch (e: Exception) {
                 mLastError = e
                 cancel(true)
@@ -196,7 +207,7 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
             }
         }
 
-        private fun getDataFromApi(): MutableList<String> {
+        private fun getDataFromApi(): List<String> {
             val now = DateTime(System.currentTimeMillis())
             val eventStrings: MutableList<String> = mutableListOf()
             val events = mService.events()?.list("primary")
@@ -207,30 +218,43 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
                     ?.execute()
             val items = events?.items ?: emptyList()
 
+            val dayDateFormat = SimpleDateFormat("dd", Locale.ENGLISH)
+            val monthDateFormat = SimpleDateFormat("MM", Locale.ENGLISH)
+            val fullDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
+
             for (event in items) {
-                val start: DateTime = event.start.date
-                eventStrings += String.format("%s (%s)", event.summary, start)
+                val calendarItem = CalendarItem(
+                        title = event.summary,
+                        day = dayDateFormat.format(
+                                fullDateFormat.parse(event.start.date.toStringRfc3339())
+                        ),
+                        month = monthDateFormat.format(
+                                fullDateFormat.parse(event.start.date.toStringRfc3339())
+                        ),
+                        desc = event.description
+                )
+                calendarItems.add(calendarItem)
+//                val start: DateTime = event.start.date
+//                eventStrings += String.format("%s (%s)", event.summary, start)
             }
             return eventStrings
         }
 
-        private fun addEventToCalendar() {
-            //TODO: pass event parameters through arguments
-            val startDate = Date().time
-            val endDate = Date(startDate + 86400000)
-
-            val dateFormat: DateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
-            val startDateStr: String = dateFormat.format(startDate)
-            val endDateStr: String = dateFormat.format(endDate)
+        private fun addEventToCalendar(calendarItem: CalendarItem): List<String> {
+            val currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
+            val startDateStr = "$currentYear-${calendarItem.month}-${calendarItem.day}"
+            val endDateStr = "$currentYear-${calendarItem.month}-${String.format("%02d", calendarItem.day.toInt() + 1)}"
 
             val startDateTime = DateTime(startDateStr)
             val endDateTime = DateTime(endDateStr)
             val event: Event = Event()
                     .setStart(EventDateTime().setDate(startDateTime))
                     .setEnd(EventDateTime().setDate(endDateTime))
-                    .setSummary("klata kurła")
-                    .setDescription("sobek ciągnie druta")
+                    .setSummary(calendarItem.title)
+                    .setDescription(calendarItem.desc)
             mService.events()?.insert("primary", event)?.execute()
+            calendarItems.add(calendarItem)
+            return emptyList()
         }
 
 
@@ -240,8 +264,11 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
 
         override fun onPostExecute(result: List<String>?) {
             mProgress?.visibility = View.GONE
+            val mAdapter = CalendarAdapter(this@CalendarActivity, calendarItems)
+            recycleCalender.adapter = mAdapter
             if (result == null || result.isEmpty()) {
-            } else {
+            }
+            else {
             }
         }
 
