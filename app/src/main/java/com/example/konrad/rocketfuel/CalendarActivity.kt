@@ -31,7 +31,6 @@ import com.google.api.services.calendar.model.EventDateTime
 import kotlinx.android.synthetic.main.activity_calendar.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -51,6 +50,8 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
 
     private var calendarItems: ArrayList<CalendarItem> = ArrayList()
 
+    private var newEvent : CalendarItem? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_calendar)
@@ -58,10 +59,24 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
                 this, listOf(CalendarScopes.CALENDAR)
         ).setBackOff(ExponentialBackOff())
 
+        fabCalendar.setOnClickListener {
+            startActivity(Intent(this,EventCalenderActivity::class.java))
+            finish()
+        }
+
+        newEvent = intent.getSerializableExtra("calendarItem") as CalendarItem?
+
+        if(newEvent!=null) {
+            runGoogleCalendarEvent(CalendarOperation.CreateEvent, newEvent ?: CalendarItem())
+
+        }
+
+        runGoogleCalendarEvent(CalendarOperation.ReadEvents)
+
+
         recycleCalender.setHasFixedSize(true)
         recycleCalender.layoutManager = LinearLayoutManager(this)
 
-        runGoogleCalendarEvent(CalendarOperation.ReadEvents)
     }
 
     private fun runGoogleCalendarEvent(calendarOperation: CalendarOperation,
@@ -74,7 +89,7 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
         }
         else if (!isDeviceOnline()) {
         }
-        else if (mCredential != null) {
+        if (mCredential != null) {
             MakeRequestTask(
                     mCredential as GoogleAccountCredential,
                     calendarOperation,
@@ -114,7 +129,6 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
                     .getString(PREF_ACCOUNT_NAME, null)
             if (accountName != null) {
                 mCredential?.selectedAccountName = accountName
-                runGoogleCalendarEvent(CalendarOperation.ReadEvents)
             } else {
                 // Start a dialog from which the user can choose an account
                 startActivityForResult(
@@ -221,7 +235,7 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
             val dayDateFormat = SimpleDateFormat("dd", Locale.ENGLISH)
             val monthDateFormat = SimpleDateFormat("MM", Locale.ENGLISH)
             val fullDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
-
+            calendarItems.clear()
             for (event in items) {
                 val calendarItem = CalendarItem(
                         title = event.summary,
@@ -253,7 +267,6 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
                     .setSummary(calendarItem.title)
                     .setDescription(calendarItem.desc)
             mService.events()?.insert("primary", event)?.execute()
-            calendarItems.add(calendarItem)
             return emptyList()
         }
 
@@ -289,5 +302,10 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
             } else {
             }
         }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
     }
 }

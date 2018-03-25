@@ -36,7 +36,8 @@
         <activity android:name=".UploadExercise" />
         <activity android:name=".UploadExerciseToCategory" />
         <activity android:name=".ShowExercise" />
-        <activity android:name=".CalendarActivity"></activity>
+        <activity android:name=".CalendarActivity" />
+        <activity android:name=".EventCalenderActivity"></activity>
     </application>
 
 </manifest>

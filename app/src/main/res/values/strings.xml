@@ -35,5 +35,8 @@
     <string name="settings">Settings</string>
     <string name="account">Account</string>
     <string name="training">Start training</string>
+    <string name="pick_data">Pick data</string>
+    <string name="submit_event">Submit event</string>
+    <string name="your_date">Your date</string>
 
 </resources>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.konrad.rocketfuel.EventCalenderActivity">
+
+    <TextView
+        android:id="@+id/dateCalendar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="63dp"
+        android:text="@string/your_date"
+        android:textSize="30sp"
+        android:padding="10dp"/>
+
+    <EditText
+        android:id="@+id/dateTitleCalendar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pickDateCalendar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="41dp"
+        android:background="@drawable/text_shape"
+        android:ems="10"
+        android:hint="@string/title"
+        android:inputType="textPersonName"
+        android:maxLines="4"
+        android:padding="10dp"
+        android:singleLine="false" />
+
+    <EditText
+        android:id="@+id/dateDescCalendar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dateTitleCalendar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/text_shape"
+        android:ems="10"
+        android:hint="@string/description"
+        android:inputType="text|textMultiLine"
+        android:padding="10dp" />
+
+    <Button
+        android:id="@+id/pickDateCalendar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dateCalendar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:padding="10dp"
+        android:background="@drawable/btn_login"
+        android:text="@string/pick_data" />
+
+    <Button
+        android:id="@+id/submitEventCalendar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dateDescCalendar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="35dp"
+        android:padding="10dp"
+        android:text="@string/submit_event"
+        android:background="@drawable/btn_upload"
+        android:textColor="@color/colorWhite"/>
+</RelativeLayout>
