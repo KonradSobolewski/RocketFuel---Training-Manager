@@ -119,7 +119,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             }
             R.id.nav_calender -> {
-
+                startActivity(Intent(this, CalendarActivity::class.java))
             }
             R.id.nav_gallery -> {
 
