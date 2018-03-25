@@ -142,7 +142,8 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
                     this,
                     "This app needs to access your Google account (via Contacts).",
                     REQUEST_PERMISSION_GET_ACCOUNTS,
-                    Manifest.permission.GET_ACCOUNTS)
+                    Manifest.permission.GET_ACCOUNTS
+            )
         }
     }
 
@@ -158,7 +159,6 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
         when (requestCode) {
             REQUEST_GOOGLE_PLAY_SERVICES -> if (resultCode != Activity.RESULT_OK) {}
             else {
-                runGoogleCalendarEvent(CalendarOperation.ReadEvents)
             }
             REQUEST_ACCOUNT_PICKER -> if (resultCode == Activity.RESULT_OK && data != null &&
                     data.extras != null) {
@@ -169,11 +169,9 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
                     editor.putString(PREF_ACCOUNT_NAME, accountName)
                     editor.apply()
                     mCredential?.selectedAccountName = accountName
-                    runGoogleCalendarEvent(CalendarOperation.ReadEvents)
                 }
             }
             REQUEST_AUTHORIZATION -> if (resultCode == Activity.RESULT_OK) {
-                runGoogleCalendarEvent(CalendarOperation.ReadEvents)
             }
         }
     }
@@ -200,6 +198,8 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
 
         private val mService: Calendar
         private var mLastError: Exception? = null
+        private val extendedPropertyKey = "app"
+        private val extendedPropertyValue = "RocketFuelApp"
         init {
             val transport: HttpTransport = AndroidHttp.newCompatibleTransport()
             val jsonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
@@ -225,6 +225,9 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
             val now = DateTime(System.currentTimeMillis())
             val eventStrings: MutableList<String> = mutableListOf()
             val events = mService.events()?.list("primary")
+                    ?.setPrivateExtendedProperty(listOf(
+                            "$extendedPropertyKey=$extendedPropertyValue"
+                    ))
                     ?.setMaxResults(10)
                     ?.setTimeMin(now)
                     ?.setOrderBy("startTime")
@@ -235,6 +238,7 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
             val dayDateFormat = SimpleDateFormat("dd", Locale.ENGLISH)
             val monthDateFormat = SimpleDateFormat("MM", Locale.ENGLISH)
             val fullDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
+
             calendarItems.clear()
             for (event in items) {
                 val calendarItem = CalendarItem(
@@ -248,8 +252,6 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
                         desc = event.description
                 )
                 calendarItems.add(calendarItem)
-//                val start: DateTime = event.start.date
-//                eventStrings += String.format("%s (%s)", event.summary, start)
             }
             return eventStrings
         }
@@ -261,11 +263,14 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
 
             val startDateTime = DateTime(startDateStr)
             val endDateTime = DateTime(endDateStr)
+            val extendedProperties = Event.ExtendedProperties()
+            extendedProperties.private = mapOf(Pair(extendedPropertyKey, extendedPropertyValue))
             val event: Event = Event()
                     .setStart(EventDateTime().setDate(startDateTime))
                     .setEnd(EventDateTime().setDate(endDateTime))
                     .setSummary(calendarItem.title)
                     .setDescription(calendarItem.desc)
+                    .setExtendedProperties(extendedProperties)
             mService.events()?.insert("primary", event)?.execute()
             return emptyList()
         }
