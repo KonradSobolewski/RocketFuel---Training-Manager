@@ -39,7 +39,7 @@ class EventCalenderActivity : AppCompatActivity(){
             dialog.show()
         }
 
-        mDataListener  = DatePickerDialog.OnDateSetListener { p0, year, month, day ->
+        mDataListener  = DatePickerDialog.OnDateSetListener { _, year, month, day ->
             mDay = day.toString()
             if(mDay!!.toInt()<10){
                 mDay = "0$mDay"
@@ -56,7 +56,7 @@ class EventCalenderActivity : AppCompatActivity(){
             if(dateTitleCalendar.text!=null && dateDescCalendar.text!=null &&
                     mDay!=null && mMonth!=null) {
                 val item =  CalendarItem(dateTitleCalendar.text.toString(),
-                        mDay.toString(), mMonth.toString(), dateDescCalendar.text.toString())
+                        mDay.toString(), mMonth.toString(), mYear.toString(),dateDescCalendar.text.toString())
                 startActivity(Intent(this,CalendarActivity::class.java)
                         .putExtra("calendarItem",item))
                 finish()

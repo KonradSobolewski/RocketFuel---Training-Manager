@@ -1,14 +1,14 @@
 package com.example.konrad.rocketfuel
 
-import java.io.Serializable
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
-/**
- * Created by Konrad on 25.03.2018.
- */
+@Parcelize
 class CalendarItem(
         val title : String = "Error",
         val day : String = "Error",
         val month : String = "Error",
+        val year : String = "Error",
         val desc : String = "Error",
         val eventID : String = ""
-): Serializable
+): Parcelable

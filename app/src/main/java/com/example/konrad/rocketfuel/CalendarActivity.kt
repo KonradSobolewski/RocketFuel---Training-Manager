@@ -74,7 +74,7 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
             }
         })
 
-        newEvent = intent.getSerializableExtra("calendarItem") as? CalendarItem
+        newEvent = intent.getParcelableExtra("calendarItem") as? CalendarItem
         if (newEvent != null) {
             runGoogleCalendarEvent(CalendarOperation.CreateEvent, newEvent ?: CalendarItem())
         }
@@ -244,6 +244,7 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
 
             val dayDateFormat = SimpleDateFormat("dd", Locale.ENGLISH)
             val monthDateFormat = SimpleDateFormat("MM", Locale.ENGLISH)
+            val yearDateFormat = SimpleDateFormat("yyyy", Locale.ENGLISH)
             val fullDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
 
             calendarItems.clear()
@@ -256,6 +257,9 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
                         month = monthDateFormat.format(
                                 fullDateFormat.parse(event.start.date.toStringRfc3339())
                         ),
+                        year = yearDateFormat.format(
+                                fullDateFormat.parse(event.start.date.toStringRfc3339())
+                        ),
                         desc = event.description,
                         eventID = event.id
                 )
@@ -264,9 +268,8 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
         }
 
         private fun addEventToCalendar(calendarItem: CalendarItem) {
-            val currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
-            val startDateStr = "$currentYear-${calendarItem.month}-${calendarItem.day}"
-            val endDateStr = "$currentYear-${calendarItem.month}-${String.format("%02d", calendarItem.day.toInt() + 1)}"
+            val startDateStr = "${calendarItem.year}-${calendarItem.month}-${calendarItem.day}"
+            val endDateStr = "${calendarItem.year}-${calendarItem.month}-${String.format("%02d", calendarItem.day.toInt() + 1)}"
 
             val startDateTime = DateTime(startDateStr)
             val endDateTime = DateTime(endDateStr)
