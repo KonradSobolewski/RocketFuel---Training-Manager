@@ -10,6 +10,7 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ProgressBar
 import com.example.konrad.rocketfuel.Adapters.CalendarAdapter
@@ -37,7 +38,7 @@ import kotlin.collections.ArrayList
 
 
 class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
-    enum class CalendarOperation {ReadEvents, CreateEvent}
+    enum class CalendarOperation {ReadEvents, CreateEvent, RemoveEvent}
 
     private var mCredential: GoogleAccountCredential? = null
     private val REQUEST_ACCOUNT_PICKER = 1000
@@ -64,11 +65,18 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
             finish()
         }
 
-        newEvent = intent.getSerializableExtra("calendarItem") as CalendarItem?
+        val mAdapter = CalendarAdapter(this@CalendarActivity, calendarItems)
 
-        if(newEvent!=null) {
+        recycleCalender.adapter = mAdapter
+        recycleCalender.adapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeChanged(positionStart: Int, itemCount: Int, payload: Any?) {
+                runGoogleCalendarEvent(CalendarOperation.RemoveEvent, payload as CalendarItem)
+            }
+        })
+
+        newEvent = intent.getSerializableExtra("calendarItem") as? CalendarItem
+        if (newEvent != null) {
             runGoogleCalendarEvent(CalendarOperation.CreateEvent, newEvent ?: CalendarItem())
-
         }
 
         runGoogleCalendarEvent(CalendarOperation.ReadEvents)
@@ -194,7 +202,7 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
     inner class MakeRequestTask(credential: GoogleAccountCredential,
                                 private val calendarOperation: CalendarOperation,
                                 private val calendarItem: CalendarItem = CalendarItem())
-        : AsyncTask<Void, Void, List<String>>() {
+        : AsyncTask<Void, Void, Unit>() {
 
         private val mService: Calendar
         private var mLastError: Exception? = null
@@ -208,22 +216,21 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
                     .build()
         }
 
-        override fun doInBackground(vararg params: Void?): List<String> {
-            return try {
+        override fun doInBackground(vararg params: Void?) {
+            try {
                 when (calendarOperation) {
                     CalendarOperation.ReadEvents -> getDataFromApi()
                     CalendarOperation.CreateEvent -> addEventToCalendar(calendarItem)
+                    CalendarOperation.RemoveEvent -> removeEventFromCalendar(calendarItem.eventID)
                 }
             } catch (e: Exception) {
                 mLastError = e
                 cancel(true)
-                return listOf()
             }
         }
 
-        private fun getDataFromApi(): List<String> {
+        private fun getDataFromApi() {
             val now = DateTime(System.currentTimeMillis())
-            val eventStrings: MutableList<String> = mutableListOf()
             val events = mService.events()?.list("primary")
                     ?.setPrivateExtendedProperty(listOf(
                             "$extendedPropertyKey=$extendedPropertyValue"
@@ -249,14 +256,14 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
                         month = monthDateFormat.format(
                                 fullDateFormat.parse(event.start.date.toStringRfc3339())
                         ),
-                        desc = event.description
+                        desc = event.description,
+                        eventID = event.id
                 )
                 calendarItems.add(calendarItem)
             }
-            return eventStrings
         }
 
-        private fun addEventToCalendar(calendarItem: CalendarItem): List<String> {
+        private fun addEventToCalendar(calendarItem: CalendarItem) {
             val currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
             val startDateStr = "$currentYear-${calendarItem.month}-${calendarItem.day}"
             val endDateStr = "$currentYear-${calendarItem.month}-${String.format("%02d", calendarItem.day.toInt() + 1)}"
@@ -272,22 +279,20 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
                     .setDescription(calendarItem.desc)
                     .setExtendedProperties(extendedProperties)
             mService.events()?.insert("primary", event)?.execute()
-            return emptyList()
         }
 
+        private fun removeEventFromCalendar(eventID: String) {
+            mService.events().delete("primary", eventID).execute()
+            calendarItems.remove(calendarItem)
+        }
 
         override fun onPreExecute() {
             mProgress?.visibility = View.VISIBLE
         }
 
-        override fun onPostExecute(result: List<String>?) {
+        override fun onPostExecute(result: Unit?) {
             mProgress?.visibility = View.GONE
-            val mAdapter = CalendarAdapter(this@CalendarActivity, calendarItems)
-            recycleCalender.adapter = mAdapter
-            if (result == null || result.isEmpty()) {
-            }
-            else {
-            }
+            recycleCalender.adapter.notifyDataSetChanged()
         }
 
         override fun onCancelled() {

@@ -1,6 +1,7 @@
 package com.example.konrad.rocketfuel.Adapters
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -27,9 +28,24 @@ class CalendarAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
         val viewHolder = holder as CalenderViewHolder
         val model : CalendarItem = calendarList[position]
-        viewHolder.setTitle(model.title)
-        viewHolder.setDay(model.day)
-        viewHolder.setMonth(model.month)
-        viewHolder.setDescription(model.desc)
+        viewHolder.run {
+            setTitle(model.title)
+            setDay(model.day)
+            setMonth(model.month)
+            setDescription(model.desc)
+
+            itemView.setOnLongClickListener {
+                AlertDialog.Builder(activity).run {
+                    setTitle("Deleting event")
+                    setMessage("Are you sure you want to delete event?")
+                    setPositiveButton("Do it!", { _, _ ->
+                        notifyItemRangeChanged(position, 1, model)
+                    })
+                    setNegativeButton("Cancel", { dialog, _ -> dialog.dismiss() })
+                    show()
+                }
+                true
+            }
+        }
     }
 }
