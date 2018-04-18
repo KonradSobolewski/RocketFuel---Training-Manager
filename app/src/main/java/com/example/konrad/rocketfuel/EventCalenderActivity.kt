@@ -11,13 +11,15 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_event_calender.*
 import java.util.*
 
-class EventCalenderActivity : AppCompatActivity(){
+class EventCalenderActivity : AppCompatActivity() {
 
-    private var   mDataListener : DatePickerDialog.OnDateSetListener? = null
+    private val mDataListener : DatePickerDialog.OnDateSetListener by lazy {
+        initDataListener()
+    }
 
-    private var mDay : String?= null
-    private var mYear : String?= null
-    private var mMonth : String?= null
+    private var mDay: String? = null
+    private var mMonth: String? = null
+    private var mYear: String? = null
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,36 +41,37 @@ class EventCalenderActivity : AppCompatActivity(){
             dialog.show()
         }
 
-        mDataListener  = DatePickerDialog.OnDateSetListener { _, year, month, day ->
-            mDay = day.toString()
-            if(mDay!!.toInt()<10){
-                mDay = "0$mDay"
-            }
-            mMonth = (month+1).toString()
-            if(mMonth!!.toInt()<10){
-                mMonth = "0$mMonth"
-            }
-            mYear = year.toString()
-            dateCalendar.text = "$mDay/$mMonth/$mYear"
-        }
-
         submitEventCalendar.setOnClickListener {
-            if(dateTitleCalendar.text!=null && dateDescCalendar.text!=null &&
-                    mDay!=null && mMonth!=null) {
-                val item =  CalendarItem(dateTitleCalendar.text.toString(),
-                        mDay.toString(), mMonth.toString(), mYear.toString(),dateDescCalendar.text.toString())
+            if (dateTitleCalendar.text != null && dateDescCalendar.text != null &&
+                    mDay != null && mMonth != null) {
+                val item = CalendarItem(
+                        dateTitleCalendar.text.toString(),
+                        mDay.toString(), mMonth.toString(), mYear.toString(),
+                        dateDescCalendar.text.toString()
+                )
                 startActivity(Intent(this,CalendarActivity::class.java)
                         .putExtra("calendarItem",item))
                 finish()
-            }else{
-                Toast.makeText(this,"Complete all fields",Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(
+                        this,
+                        getString(R.string.complete_all_fields_prompt),
+                        Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        finish()
+    private fun initDataListener() = DatePickerDialog.OnDateSetListener { _, year, month, day ->
+        mDay = day.toString()
+        if(mDay!!.toInt()<10){
+            mDay = "0$mDay"
+        }
+        mMonth = (month+1).toString()
+        if(mMonth!!.toInt()<10){
+            mMonth = "0$mMonth"
+        }
+        mYear = year.toString()
+        dateCalendar.text = "$mDay/$mMonth/$mYear"
     }
-
 }

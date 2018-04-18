@@ -38,27 +38,29 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setSupportActionBar(toolbar)
 
         //Add adapter to pageView
-        val myFragAdapter = MyFragmentAdapter(supportFragmentManager, this)
-        homeViewPager.adapter = myFragAdapter
+        homeViewPager.adapter = MyFragmentAdapter(supportFragmentManager, this)
         homeTab.setupWithViewPager(homeViewPager)
         val root: View = homeTab.getChildAt(0)
-        if (root is LinearLayout){
-            root.showDividers = LinearLayout.SHOW_DIVIDER_MIDDLE
-            val drawable = GradientDrawable()
-            drawable.setColor(ContextCompat.getColor(this, R.color.colorWhite))
-            drawable.setSize(3,2)
-            root.dividerPadding = 10
-            root.dividerDrawable = drawable
+        if (root is LinearLayout) {
+            val drawable = GradientDrawable().apply {
+                setColor(ContextCompat.getColor(this@HomeActivity, R.color.colorWhite))
+                setSize(3, 2)
+            }
+            root.run {
+                showDividers = LinearLayout.SHOW_DIVIDER_MIDDLE
+                dividerPadding = 10
+                dividerDrawable = drawable
+            }
         }
 
         val toggle = ActionBarDrawerToggle(
-                this, drawer_layout, toolbar, R.string.navigation_drawer_open,
+                this, drawerLayout, toolbar, R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close
         )
-        drawer_layout.addDrawerListener(toggle)
+        drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
-        nav_view.setNavigationItemSelectedListener(this)
+        navView.setNavigationItemSelectedListener(this)
 
         val usersReference = mDatabase.child("Users")
         usersReference?.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -75,19 +77,19 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         currentUserSnapshot.child("Surname").value.toString()
                 userEmail = currentUserSnapshot.child("Email").value.toString()
                 userImage = currentUserSnapshot.child("Image").value.toString()
-                nav_view.getHeaderView(0).navbarHeaderID.text = userName
-                nav_view.getHeaderView(0).navbarEmailID.text = userEmail
+                navView.getHeaderView(0).navbarHeaderID.text = userName
+                navView.getHeaderView(0).navbarEmailID.text = userEmail
                 if (userImage != "")
                     Picasso.with(applicationContext)
                             .load(userImage)
-                            .into(nav_view.getHeaderView(0).imagePersonIcon)
+                            .into(navView.getHeaderView(0).imagePersonIcon)
             }
         })
     }
 
     override fun onBackPressed() {
-        if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
-            drawer_layout.closeDrawer(GravityCompat.START)
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START)
         } else {
             super.onBackPressed()
             finish()
@@ -131,7 +133,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
 
-        drawer_layout.closeDrawer(GravityCompat.START)
+        drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
 
