@@ -41,23 +41,23 @@ class CategoryFragment : Fragment() {
             object: FirebaseRecyclerAdapter<CategoryItem,CategoryViewHolder>(options) {
 
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): CategoryViewHolder {
-            val mView: View? = LayoutInflater.from(parent?.context)
+            val mView: View = LayoutInflater.from(parent?.context)
                     .inflate(R.layout.category_row,parent,false)
-            return CategoryViewHolder(mView!!)
+            return CategoryViewHolder(mView)
         }
 
         override fun onBindViewHolder(holder: CategoryViewHolder?, position: Int,
                                       model: CategoryItem?) {
-            holder?.setTitle(model?.title ?: "")
-            holder?.setDescription("Description: " + model?.description)
-            holder?.setImage(context, model?.image ?: "")
-            Log.d("position", Integer.toString(position))
-
-            holder?.itemView?.setOnClickListener {
-                startActivity(
-                        Intent(activity, ExerciseDetailsActivity::class.java)
-                                .putExtra("title", model?.title)
-                )
+            holder?.run {
+                setTitle(model?.title ?: "")
+                setDescription("Description: " + model?.description)
+                setImage(context, model?.image ?: "")
+                itemView.setOnClickListener {
+                    startActivity(
+                            Intent(activity, ExerciseDetailsActivity::class.java)
+                                    .putExtra("title", model?.title)
+                    )
+                }
             }
         }
     }
@@ -68,13 +68,13 @@ class CategoryFragment : Fragment() {
         val view: View = inflater!!.inflate(
                 R.layout.fragment_category, container, false
         )
-        val mLayoutManager = LinearLayoutManager(activity)
-        recyclerView = view.findViewById(R.id.recycleCategory)
-        recyclerView?.setHasFixedSize(true)
-        recyclerView?.layoutManager = mLayoutManager
         mAdapter.startListening()
-        recyclerView?.adapter = mAdapter
-
+        recyclerView = view.findViewById(R.id.recycleCategory)
+        recyclerView?.run {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(activity)
+            adapter = mAdapter
+        }
         return view
     }
 
