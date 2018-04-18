@@ -21,19 +21,19 @@ import kotlinx.android.synthetic.main.exercise_row.view.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
 class ExerciseDetailsActivity : AppCompatActivity() {
-    private var mDatabaseReference: DatabaseReference? = null
-    private var title : String? = null
+    private var mDatabaseReference: DatabaseReference = FirebaseDatabase.getInstance().reference
+    private lateinit var title : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_exercise_details)
         title = intent.extras.getString("title")
 
-        mDatabaseReference = FirebaseDatabase.getInstance().reference.child("Exercises").child(title)
-        mDatabaseReference?.keepSynced(true)
-
         exercisesRecycleView.setHasFixedSize(true)
         exercisesRecycleView.layoutManager = LinearLayoutManager(this)
+
+        mDatabaseReference = mDatabaseReference.child("Exercises").child(title)
+        mDatabaseReference.keepSynced(true)
         logRecycleView()
 
         fab.setOnClickListener {
@@ -67,12 +67,6 @@ class ExerciseDetailsActivity : AppCompatActivity() {
                     )
                     intent.putExtra("title",it.post_title_exe.text)
                     intent.putExtra("category",title)
-
-//                    val image : Bitmap = (holder.itemView.post_img_exe.drawable as BitmapDrawable).bitmap
-//                    val stream = ByteArrayOutputStream()
-//                    image.compress(Bitmap.CompressFormat.PNG, 1, stream)
-//                    val byteArray = stream.toByteArray()
-//                    intent.putExtra("image",byteArray)
 
                     val p1 :Pair<View,String> = Pair(it.post_title_exe as View, "exercise1")
                     val p2 :Pair<View,String> = Pair(it.post_timestamp_exe as View, "exercise2")

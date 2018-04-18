@@ -38,6 +38,9 @@
     <string name="pick_data">Pick data</string>
     <string name="submit_event">Submit event</string>
     <string name="your_date">Your date</string>
+    <string name="complete_fields">Complete all fields</string>
+    <string name="went_wrong">Something went wrong</string>
+    <string name="no_image">You haven\'t picked Image</string>
     <string name="complete_all_fields_prompt">Complete all fields</string>
 
 </resources>

@@ -26,8 +26,8 @@ class UploadExercise : AppCompatActivity() {
 
     private var spinnerData: ArrayList<String> = ArrayList()
 
-    private var categoryIdSelect : String = ""
-    private var spotsDialog: SpotsDialog? = null
+    private lateinit var categoryIdSelect : String
+    private lateinit var spotsDialog: SpotsDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,12 +74,12 @@ class UploadExercise : AppCompatActivity() {
 
     private fun postData(title: String, description: String, hints: String,
                          dbRef: DatabaseReference) {
-        spotsDialog?.show()
+        spotsDialog.show()
         if (
                 TextUtils.isEmpty(title) || TextUtils.isEmpty(description) || TextUtils.isEmpty(hints) || imgUrl == Uri.EMPTY
         ) {
-            spotsDialog?.dismiss()
-            Toast.makeText(this,"Complete all fields", Toast.LENGTH_SHORT).show()
+            spotsDialog.dismiss()
+            Toast.makeText(this,getString(R.string.complete_fields), Toast.LENGTH_SHORT).show()
         }
         else {
             val filePath = mStorageReference.child("Exercises_img").child(imgUrl.lastPathSegment)
@@ -94,7 +94,7 @@ class UploadExercise : AppCompatActivity() {
                 dbRef.child("image").setValue(downloadUrl.toString())
                 dbRef.push()
 
-                spotsDialog?.dismiss()
+                spotsDialog.dismiss()
                 finish()
             }
         }

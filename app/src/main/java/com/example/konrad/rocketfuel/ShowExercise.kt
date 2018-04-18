@@ -12,8 +12,8 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
 class ShowExercise : AppCompatActivity() {
     private val mDatabaseReference: DatabaseReference = FirebaseDatabase.getInstance().reference
-    private var title : String = ""
-    private var category : String = ""
+    private lateinit var title : String
+    private lateinit var category : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

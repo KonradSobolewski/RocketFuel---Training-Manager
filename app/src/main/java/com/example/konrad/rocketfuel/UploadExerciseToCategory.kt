@@ -27,14 +27,14 @@ class UploadExerciseToCategory : AppCompatActivity() {
     private val GALLERY_REQUEST = 1
     private var imgUrl: Uri = Uri.EMPTY
 
-    private var title: String = ""
-    private var spotsDialog: SpotsDialog? = null
+    private lateinit var title: String
+    private lateinit var spotsDialog: SpotsDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_upload_exercise_to_category)
-        title = intent.extras.getString("title") ?: ""
 
+        title = intent.extras.getString("title") ?: ""
         categoryName.text = title
 
         imageUploadViewCategory.setOnClickListener({
@@ -56,7 +56,7 @@ class UploadExerciseToCategory : AppCompatActivity() {
         val descVal = uploadDescriptionCategory.text.toString().trim()
         val promptsVal = coachPromptUploadCategory.text.toString().trim()
 
-        spotsDialog?.show()
+        spotsDialog.show()
 
         if (
                 TextUtils.isEmpty(titleVal) ||
@@ -64,8 +64,8 @@ class UploadExerciseToCategory : AppCompatActivity() {
                 TextUtils.isEmpty(promptsVal) ||
                 imgUrl == Uri.EMPTY
         ) {
-            spotsDialog?.dismiss()
-            Toast.makeText(this,"Complete all fields",Toast.LENGTH_SHORT).show()
+            spotsDialog.dismiss()
+            Toast.makeText(this,getString(R.string.complete_fields),Toast.LENGTH_SHORT).show()
         }
         else {
             val filePath = mStorageReference.child("Exercises_img").child(imgUrl.lastPathSegment)
@@ -74,13 +74,15 @@ class UploadExerciseToCategory : AppCompatActivity() {
                 val date = Date()
                 val downloadUrl = taskSnapshot.downloadUrl
                 val newPost: DatabaseReference = exerciseReference.child(title).child(titleVal)
-                newPost.child("title").setValue(titleVal)
-                newPost.child("description").setValue(descVal)
-                newPost.child("prompts").setValue(promptsVal)
-                newPost.child("timestamp").setValue( dateFormat.format(date).toString())
-                newPost.child("image").setValue(downloadUrl.toString())
-                newPost.push()
-                spotsDialog?.dismiss()
+                newPost.run{
+                    child("title").setValue(titleVal)
+                    newPost.child("description").setValue(descVal)
+                    newPost.child("prompts").setValue(promptsVal)
+                    newPost.child("timestamp").setValue( dateFormat.format(date).toString())
+                    newPost.child("image").setValue(downloadUrl.toString())
+                    push()
+                }
+                spotsDialog.dismiss()
                 startActivity(Intent(this, ExerciseDetailsActivity::class.java)
                         .putExtra("title", titleVal))
                 finish()
@@ -97,12 +99,12 @@ class UploadExerciseToCategory : AppCompatActivity() {
                     imageUploadViewCategory.setImageBitmap(selectedImage)
                 } catch (e: FileNotFoundException) {
                     e.printStackTrace()
-                    Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG)
+                    Toast.makeText(this, getString(R.string.went_wrong), Toast.LENGTH_LONG)
                             .show()
                 }
             }
             else {
-                Toast.makeText(this, "You haven't picked Image", Toast.LENGTH_LONG)
+                Toast.makeText(this, getString(R.string.no_image), Toast.LENGTH_LONG)
                         .show()
             }
     }
