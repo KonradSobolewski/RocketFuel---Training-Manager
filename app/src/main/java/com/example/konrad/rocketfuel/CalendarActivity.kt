@@ -11,8 +11,6 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.View
-import android.widget.ProgressBar
 import com.example.konrad.rocketfuel.Adapters.CalendarAdapter
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -40,51 +38,48 @@ import kotlin.collections.ArrayList
 class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     enum class CalendarOperation {ReadEvents, CreateEvent, RemoveEvent}
 
-    private var mCredential: GoogleAccountCredential? = null
     private val REQUEST_ACCOUNT_PICKER = 1000
     private val REQUEST_AUTHORIZATION = 1001
     private val REQUEST_GOOGLE_PLAY_SERVICES = 1002
     private val REQUEST_PERMISSION_GET_ACCOUNTS = 1003
     private val PREF_ACCOUNT_NAME = "accountName"
 
-    private var mProgress: ProgressBar? = null
+    private val calendarItems: ArrayList<CalendarItem> = ArrayList()
 
-    private var calendarItems: ArrayList<CalendarItem> = ArrayList()
+    private val newEvent: CalendarItem? by lazy {
+        intent.getParcelableExtra("calendarItem") as? CalendarItem
+    }
 
-    private var newEvent : CalendarItem? = null
+    private val mCredential: GoogleAccountCredential by lazy {
+        GoogleAccountCredential.usingOAuth2(
+                this, listOf(CalendarScopes.CALENDAR)
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_calendar)
-        mCredential = GoogleAccountCredential.usingOAuth2(
-                this, listOf(CalendarScopes.CALENDAR)
-        ).setBackOff(ExponentialBackOff())
+
+        mCredential.backOff = ExponentialBackOff()
 
         fabCalendar.setOnClickListener {
             startActivity(Intent(this,EventCalenderActivity::class.java))
             finish()
         }
 
-        val mAdapter = CalendarAdapter(this@CalendarActivity, calendarItems)
-
-        recycleCalender.adapter = mAdapter
-        recycleCalender.adapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
-            override fun onItemRangeChanged(positionStart: Int, itemCount: Int, payload: Any?) {
-                runGoogleCalendarEvent(CalendarOperation.RemoveEvent, payload as CalendarItem)
-            }
-        })
-
-        newEvent = intent.getParcelableExtra("calendarItem") as? CalendarItem
-        if (newEvent != null) {
-            runGoogleCalendarEvent(CalendarOperation.CreateEvent, newEvent ?: CalendarItem())
+        recycleCalender.run {
+            adapter = CalendarAdapter(this@CalendarActivity, calendarItems)
+            adapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
+                override fun onItemRangeChanged(positionStart: Int, itemCount: Int, payload: Any?) {
+                    runGoogleCalendarEvent(CalendarOperation.RemoveEvent, payload as CalendarItem)
+                }
+            })
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(this@CalendarActivity)
         }
 
+        runGoogleCalendarEvent(CalendarOperation.CreateEvent, newEvent ?: CalendarItem())
         runGoogleCalendarEvent(CalendarOperation.ReadEvents)
-
-
-        recycleCalender.setHasFixedSize(true)
-        recycleCalender.layoutManager = LinearLayoutManager(this)
-
     }
 
     private fun runGoogleCalendarEvent(calendarOperation: CalendarOperation,
@@ -92,18 +87,17 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
         if (!isGooglePlayServicesAvailable()) {
             acquireGooglePlayServices()
         }
-        else if (mCredential?.selectedAccountName == null) {
+        else if (mCredential.selectedAccountName == null) {
             chooseAccount()
         }
         else if (!isDeviceOnline()) {
         }
-        if (mCredential != null) {
-            MakeRequestTask(
-                    mCredential as GoogleAccountCredential,
-                    calendarOperation,
-                    calendarItem
-            ).execute()
-        }
+
+        MakeRequestTask(
+                mCredential,
+                calendarOperation,
+                calendarItem
+        ).execute()
     }
 
     private fun isGooglePlayServicesAvailable(): Boolean {
@@ -136,11 +130,11 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
             val accountName = getPreferences(Context.MODE_PRIVATE)
                     .getString(PREF_ACCOUNT_NAME, null)
             if (accountName != null) {
-                mCredential?.selectedAccountName = accountName
+                mCredential.selectedAccountName = accountName
             } else {
                 // Start a dialog from which the user can choose an account
                 startActivityForResult(
-                        mCredential?.newChooseAccountIntent(),
+                        mCredential.newChooseAccountIntent(),
                         REQUEST_ACCOUNT_PICKER
                 )
             }
@@ -161,13 +155,10 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
         return networkInfo != null && networkInfo.isConnected
     }
 
-    override fun onActivityResult(
-            requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
-            REQUEST_GOOGLE_PLAY_SERVICES -> if (resultCode != Activity.RESULT_OK) {}
-            else {
-            }
+            REQUEST_GOOGLE_PLAY_SERVICES -> if (resultCode == Activity.RESULT_OK) {}
             REQUEST_ACCOUNT_PICKER -> if (resultCode == Activity.RESULT_OK && data != null &&
                     data.extras != null) {
                 val accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
@@ -176,11 +167,10 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
                     val editor = settings.edit()
                     editor.putString(PREF_ACCOUNT_NAME, accountName)
                     editor.apply()
-                    mCredential?.selectedAccountName = accountName
+                    mCredential.selectedAccountName = accountName
                 }
             }
-            REQUEST_AUTHORIZATION -> if (resultCode == Activity.RESULT_OK) {
-            }
+            REQUEST_AUTHORIZATION -> if (resultCode == Activity.RESULT_OK) {}
         }
     }
 
@@ -248,7 +238,7 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
             val fullDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
 
             calendarItems.clear()
-            for (event in items) {
+            items.forEach {event ->
                 val calendarItem = CalendarItem(
                         title = event.summary,
                         day = dayDateFormat.format(
@@ -290,16 +280,13 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
         }
 
         override fun onPreExecute() {
-            mProgress?.visibility = View.VISIBLE
         }
 
         override fun onPostExecute(result: Unit?) {
-            mProgress?.visibility = View.GONE
             recycleCalender.adapter.notifyDataSetChanged()
         }
 
         override fun onCancelled() {
-            mProgress?.visibility = View.GONE
             if (mLastError != null) {
                 when (mLastError) {
                     is GooglePlayServicesAvailabilityIOException ->
@@ -312,13 +299,7 @@ class CalendarActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
                             REQUEST_AUTHORIZATION
                     )
                 }
-            } else {
             }
         }
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        finish()
     }
 }
