@@ -42,5 +42,9 @@
     <string name="went_wrong">Something went wrong</string>
     <string name="no_image">You haven\'t picked Image</string>
     <string name="complete_all_fields_prompt">Complete all fields</string>
+    <string name="google_connection_failed">Google connection failed</string>
+    <string name="incorrect_credentials">Incorrect credentials</string>
+    <string name="email_verify_prompt">Please verify your email</string>
+    <string name="connection_error">Connection error</string>
 
 </resources>

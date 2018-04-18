@@ -24,16 +24,24 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
 class LoginActivity : AppCompatActivity() {
 
-    private var animationDrawable: AnimationDrawable? = null
+    private val animationDrawable: AnimationDrawable by lazy {
+        relativeLayout.background as AnimationDrawable
+    }
 
     private val dbRef: DatabaseReference = FirebaseDatabase.getInstance().reference.child("Users")
     private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    private var mListener: FirebaseAuth.AuthStateListener? = null
+    private val mListener: FirebaseAuth.AuthStateListener by lazy {
+        initFirebaseAuthListener()
+    }
 
     private val RC_SIGN_IN = 1
-    private var mGoogleApiClient: GoogleApiClient? = null
-    private var spotsDialog: SpotsDialog? = null
+    private val mGoogleApiClient: GoogleApiClient by lazy {
+        initGoogleApiClient()
+    }
+    private val spotsDialog: SpotsDialog by lazy {
+        SpotsDialog(this, R.style.DialogStyleLog)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,29 +53,6 @@ class LoginActivity : AppCompatActivity() {
         if (isRegisterDone) {
             Toast.makeText(this, "Register succeeded", Toast.LENGTH_SHORT).show()
         }
-
-        mListener = FirebaseAuth.AuthStateListener { auth ->
-            val user = auth.currentUser
-            if (user != null && user.isEmailVerified) {
-                val homeIntent = Intent(this, HomeActivity::class.java)
-                startActivity(homeIntent)
-                finish()
-            }
-        }
-
-
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build()
-
-        mGoogleApiClient = GoogleApiClient.Builder(applicationContext)
-                .enableAutoManage(this) {
-                    Toast.makeText(
-                            this, "Google connection failed", Toast.LENGTH_SHORT
-                    ).show()
-                }.addApi(Auth.GOOGLE_SIGN_IN_API, gso).build()
-
 
         registerText.setOnClickListener({
             startActivity(Intent(this, RegisterActivity::class.java))
@@ -81,32 +66,29 @@ class LoginActivity : AppCompatActivity() {
             signIn()
         })
 
-        animationDrawable = relativeLayout.background as AnimationDrawable
-
-        animationDrawable?.setEnterFadeDuration(4500)
-        animationDrawable?.setExitFadeDuration(4500)
-        animationDrawable?.start()
-
-        spotsDialog = SpotsDialog(this, R.style.DialogStyleLog)
+        animationDrawable.run {
+            setEnterFadeDuration(4500)
+            setExitFadeDuration(4500)
+            start()
+        }
     }
 
     private fun login(email: String, pass: String) {
-        if (
-                TextUtils.isEmpty(email) ||
-                TextUtils.isEmpty(pass)
-        ) {
-            Toast.makeText(this, "Incorrect credentials", Toast.LENGTH_SHORT).show()
+        if (TextUtils.isEmpty(email) || TextUtils.isEmpty(pass)) {
+            Toast.makeText(
+                    this, getString(R.string.incorrect_credentials), Toast.LENGTH_SHORT
+            ).show()
             return
         }
         else {
-            spotsDialog?.show()
+            spotsDialog.show()
             mAuth.signInWithEmailAndPassword(email, pass)
                     .addOnCompleteListener(this) { task ->
-                        spotsDialog?.dismiss()
+                        spotsDialog.dismiss()
                         if (task.isSuccessful) {
                             if (mAuth.currentUser?.isEmailVerified != true) {
                                 Toast.makeText(
-                                        this@LoginActivity, "Please verify your email",
+                                        this@LoginActivity, R.string.email_verify_prompt,
                                         Toast.LENGTH_SHORT
                                 ).show()
                             } else {
@@ -119,7 +101,7 @@ class LoginActivity : AppCompatActivity() {
                             }
                         } else {
                             Toast.makeText(
-                                    this@LoginActivity, "Incorrect credentials",
+                                    this@LoginActivity, R.string.incorrect_credentials,
                                     Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -128,7 +110,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun signIn() {
-        spotsDialog?.show()
+        spotsDialog.show()
 
         val signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient)
         startActivityForResult(signInIntent, RC_SIGN_IN)
@@ -142,7 +124,7 @@ class LoginActivity : AppCompatActivity() {
                 val account = task.getResult(ApiException::class.java)
                 firebaseAuthWithGoogle(account)
             } catch (e: ApiException) {
-                spotsDialog?.dismiss()
+                spotsDialog.dismiss()
             }
         }
     }
@@ -151,7 +133,7 @@ class LoginActivity : AppCompatActivity() {
         val credential = GoogleAuthProvider.getCredential(account.idToken, null)
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this) { task->
-                    spotsDialog?.dismiss()
+                    spotsDialog.dismiss()
 
                     if(task.isSuccessful) {
                         val userId: String = mAuth.currentUser?.uid ?: ""
@@ -164,16 +146,17 @@ class LoginActivity : AppCompatActivity() {
                             override fun onDataChange(p0: DataSnapshot?) {
                                 if(p0?.hasChild(userId) != true){
                                     if (acct != null ) {
-                                        val databaseRef2: DatabaseReference? = dbRef.child(userId)
                                         val personName = acct.givenName
                                         val personFamilyName = acct.familyName
                                         val personEmail = acct.email
                                         val personImg = acct.photoUrl.toString()
-                                        databaseRef2?.child("Name")?.setValue(personName)
-                                        databaseRef2?.child("Surname")?.setValue(personFamilyName)
-                                        databaseRef2?.child("Email")?.setValue(personEmail)
-                                        databaseRef2?.child("Image")?.setValue(personImg)
-                                        databaseRef2?.push()
+                                        dbRef.child(userId)?.run {
+                                            child("Name")?.setValue(personName)
+                                            child("Surname")?.setValue(personFamilyName)
+                                            child("Email")?.setValue(personEmail)
+                                            child("Image")?.setValue(personImg)
+                                            push()
+                                        }
                                     }
                                 }
                             }
@@ -185,7 +168,7 @@ class LoginActivity : AppCompatActivity() {
                         )
                         finish()
                     } else {
-                        Toast.makeText(this, "Connection error", Toast.LENGTH_SHORT)
+                        Toast.makeText(this, getString(R.string.connection_error), Toast.LENGTH_SHORT)
                                 .show()
                     }
                 }
@@ -196,13 +179,33 @@ class LoginActivity : AppCompatActivity() {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        finish()
-    }
-
     override fun onStart() {
         super.onStart()
-        mAuth.addAuthStateListener(mListener!!)
+        mAuth.addAuthStateListener(mListener)
     }
+
+    private fun initGoogleApiClient(): GoogleApiClient {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build()
+        return GoogleApiClient.Builder(applicationContext)
+                .enableAutoManage(this) {
+                    Toast.makeText(
+                            this, getString(R.string.google_connection_failed), Toast.LENGTH_SHORT
+                    ).show()
+                }
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso).build()
+    }
+
+    private fun initFirebaseAuthListener(): FirebaseAuth.AuthStateListener =
+            FirebaseAuth.AuthStateListener { auth ->
+                val user = auth.currentUser
+                if (user != null && user.isEmailVerified) {
+                    val homeIntent = Intent(this, HomeActivity::class.java)
+                    startActivity(homeIntent)
+                    finish()
+                }
+            }
+
 }
