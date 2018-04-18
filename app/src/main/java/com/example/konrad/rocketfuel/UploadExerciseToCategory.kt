@@ -28,7 +28,9 @@ class UploadExerciseToCategory : AppCompatActivity() {
     private var imgUrl: Uri = Uri.EMPTY
 
     private lateinit var title: String
-    private lateinit var spotsDialog: SpotsDialog
+    private val spotsDialog: SpotsDialog by lazy {
+        SpotsDialog(this,R.style.DialogStyle)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +49,6 @@ class UploadExerciseToCategory : AppCompatActivity() {
         uploadImageBtnCategory.setOnClickListener({
             startPosting()
         })
-        spotsDialog = SpotsDialog(this,R.style.DialogStyle)
     }
 
     private fun startPosting() {

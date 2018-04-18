@@ -1,5 +1,6 @@
 package com.example.konrad.rocketfuel
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.AnimationDrawable
@@ -17,8 +18,12 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 class RegisterActivity : AppCompatActivity() {
     private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val dbRef: DatabaseReference = FirebaseDatabase.getInstance().reference
-    private var animationDrawable: AnimationDrawable? = null
-    private var spotsDialog: SpotsDialog? = null
+    private val animationDrawable: AnimationDrawable by lazy {
+        registerLayout?.background as AnimationDrawable
+    }
+    private val spotsDialog: SpotsDialog by lazy {
+        SpotsDialog(this,R.style.DialogStyleReg)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,13 +36,9 @@ class RegisterActivity : AppCompatActivity() {
                     registerConfirmPasswordTxt.text.toString())
         })
 
-        animationDrawable = registerLayout?.background as AnimationDrawable
-        animationDrawable?.setEnterFadeDuration(4500)
-        animationDrawable?.setExitFadeDuration(4500)
-        animationDrawable?.start()
-
-        spotsDialog = SpotsDialog(this,R.style.DialogStyleReg)
-
+        animationDrawable.setEnterFadeDuration(4500)
+        animationDrawable.setExitFadeDuration(4500)
+        animationDrawable.start()
     }
 
     private fun register(userName: String, userSurname: String, email: String, pass: String,
@@ -49,41 +50,42 @@ class RegisterActivity : AppCompatActivity() {
                 TextUtils.isEmpty(pass) ||
                 TextUtils.isEmpty(passConfirm)
         ) {
-            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.complete_fields), Toast.LENGTH_SHORT).show()
             return
         }
         else if (pass != passConfirm) {
-            Toast.makeText(this, "Passwords don't match", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.password_mismatch), Toast.LENGTH_SHORT).show()
             return
         }
         else {
-            spotsDialog?.show()
+            spotsDialog.show()
 
             mAuth.createUserWithEmailAndPassword(email, pass)
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
                             val usersReference: DatabaseReference = dbRef.child("Users")
                             val userId: String = mAuth.currentUser?.uid ?: ""
-                            val userIdRef: DatabaseReference? = usersReference.child(userId)
-                            userIdRef?.child("Name")?.setValue(userName)
-                            userIdRef?.child("Surname")?.setValue(userSurname)
-                            userIdRef?.child("Email")?.setValue(email)
-                            userIdRef?.push()
+                            val userIdRef: DatabaseReference = usersReference.child(userId)
+                            userIdRef.run{
+                                child("Name").setValue(userName)
+                                child("Surname").setValue(userSurname)
+                                child("Email").setValue(email)
+                                push()
+                            }
 
                             mAuth.currentUser?.sendEmailVerification()
                             Toast.makeText(
-                                    this, "Verification email sent", Toast.LENGTH_SHORT
+                                    this, getString(R.string.verification_email), Toast.LENGTH_SHORT
                             ).show()
-                            spotsDialog?.dismiss()
+                            spotsDialog.dismiss()
 
-                            startActivity(Intent(this, LoginActivity::class.java)
-                                    .putExtra("registerFinishedFlag", true))
+                            setResult(Activity.RESULT_OK,Intent())
                             finish()
                         } else {
-                            spotsDialog?.dismiss()
+                            spotsDialog.dismiss()
 
                             Toast.makeText(
-                                    this, "Account creating failed", Toast.LENGTH_SHORT
+                                    this, getString(R.string.acc_creation_failed), Toast.LENGTH_SHORT
                             ).show()
                         }
                     }

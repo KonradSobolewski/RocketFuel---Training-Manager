@@ -27,7 +27,9 @@ class UploadExercise : AppCompatActivity() {
     private var spinnerData: ArrayList<String> = ArrayList()
 
     private lateinit var categoryIdSelect : String
-    private lateinit var spotsDialog: SpotsDialog
+    private val spotsDialog: SpotsDialog by lazy {
+        SpotsDialog(this,R.style.DialogStyle)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,8 +45,6 @@ class UploadExercise : AppCompatActivity() {
             startPosting()
         })
         loadCategoryToSpinner()
-
-        spotsDialog = SpotsDialog(this,R.style.DialogStyle)
     }
 
     private fun startPosting() {

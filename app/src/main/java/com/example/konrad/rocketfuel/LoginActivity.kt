@@ -1,5 +1,6 @@
 package com.example.konrad.rocketfuel
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.AnimationDrawable
@@ -36,6 +37,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private val RC_SIGN_IN = 1
+    private val REGISTER_KEY = 2
     private val mGoogleApiClient: GoogleApiClient by lazy {
         initGoogleApiClient()
     }
@@ -47,15 +49,8 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        val isRegisterDone: Boolean = intent.getBooleanExtra("registerFinishedFlag",
-                false)
-
-        if (isRegisterDone) {
-            Toast.makeText(this, "Register succeeded", Toast.LENGTH_SHORT).show()
-        }
-
         registerText.setOnClickListener({
-            startActivity(Intent(this, RegisterActivity::class.java))
+            startActivityForResult(Intent(this, RegisterActivity::class.java),REGISTER_KEY)
         })
 
         loginBtn.setOnClickListener({
@@ -126,6 +121,10 @@ class LoginActivity : AppCompatActivity() {
             } catch (e: ApiException) {
                 spotsDialog.dismiss()
             }
+        }
+        else if(requestCode == REGISTER_KEY && resultCode == Activity.RESULT_OK)
+        {
+            Toast.makeText(this, getString(R.string.register_succeeded), Toast.LENGTH_SHORT).show()
         }
     }
 
