@@ -59,6 +59,7 @@ dependencies {
     implementation('com.google.apis:google-api-services-calendar:v3-rev302-1.23.0') {
         exclude group: 'org.apache.httpcomponents'
     }
+    implementation 'android.arch.lifecycle:extensions:1.1.1'
 }
 
 
