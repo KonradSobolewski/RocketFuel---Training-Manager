@@ -8,11 +8,11 @@ import android.content.Intent
 import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.widget.Toast
+import com.example.konrad.rocketfuel.Utilities.SpotsDialogHandler
+import com.example.konrad.rocketfuel.Utilities.ToastMessageHandler
 import com.example.konrad.rocketfuel.ViewModels.LoginViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
-import dmax.dialog.SpotsDialog
 import kotlinx.android.synthetic.main.activity_login.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
@@ -28,19 +28,18 @@ class LoginActivity : AppCompatActivity() {
         const val REGISTER_KEY = 2
     }
 
-    private val spotsDialog: SpotsDialog by lazy {
-        SpotsDialog(this, R.style.DialogStyleLog)
-    }
-    
+    private val spotsDialogHandler = SpotsDialogHandler(this)
+    private val toastMessageHandler = ToastMessageHandler(this)
     private lateinit var viewModel : LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        viewModel = ViewModelProviders.of(this, LoginViewModelFactory(this)).get(LoginViewModel::class.java)
-        viewModel.error().observe(this, Observer(this::showToastMessage))
-        viewModel.spotsGetter().observe(this, Observer(this::showSpots))
+        viewModel = ViewModelProviders.of(this, ViewModelFactory(this, "Login"))
+                .get(LoginViewModel::class.java)
+        viewModel.error().observe(this, Observer(toastMessageHandler::showToastMessage))
+        viewModel.spotsGetter().observe(this, Observer(spotsDialogHandler::showSpots))
         viewModel.startNewActivity().observe(this, Observer(this::startHomeActivity))
 
 
@@ -76,12 +75,12 @@ class LoginActivity : AppCompatActivity() {
                 val account = task.getResult(ApiException::class.java)
                 viewModel.firebaseAuthWithGoogle(account,this)
             } catch (e: ApiException) {
-                showSpots(false)
+                spotsDialogHandler.showSpots(false)
             }
         }
         else if(requestCode == REGISTER_KEY && resultCode == Activity.RESULT_OK)
         {
-            showToastMessage(getString(R.string.register_succeeded))
+            toastMessageHandler.showToastMessage(getString(R.string.register_succeeded))
         }
     }
     //change font
@@ -97,18 +96,6 @@ class LoginActivity : AppCompatActivity() {
             )
             finish()
         }
-    }
-
-    private fun showSpots(state: Boolean?) {
-        if(state == true)
-            spotsDialog.show()
-        else
-            spotsDialog.dismiss()
-
-    }
-
-    private fun showToastMessage(message: String?) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
     private fun login(email: String, pass: String) {

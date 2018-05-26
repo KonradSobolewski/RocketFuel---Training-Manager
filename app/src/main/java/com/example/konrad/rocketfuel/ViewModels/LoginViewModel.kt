@@ -21,12 +21,12 @@ import com.google.firebase.database.*
 class LoginViewModel(private val ctx: Context) : ViewModel() {
 
     private val loginModel = LoginModel()
-    private val spotsLiveDate = MutableLiveData<Boolean>()
+    private val spotsLiveData = MutableLiveData<Boolean>()
     private val errorLiveData = MutableLiveData<String>()
     private val newActivity = MutableLiveData<Boolean>()
 
     fun error(): LiveData<String> = errorLiveData
-    fun spotsGetter(): LiveData<Boolean> = spotsLiveDate
+    fun spotsGetter(): LiveData<Boolean> = spotsLiveData
     fun startNewActivity(): LiveData<Boolean> = newActivity
 
     private val dbRef: DatabaseReference = FirebaseDatabase.getInstance().reference.child("Users")
@@ -45,7 +45,7 @@ class LoginViewModel(private val ctx: Context) : ViewModel() {
     }
 
     fun signIn() : Intent{
-        spotsLiveDate.value = true
+        spotsLiveData.value = true
         return Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient)
     }
 
@@ -59,7 +59,7 @@ class LoginViewModel(private val ctx: Context) : ViewModel() {
             return
         }else{
             loginModel.login(context, mAuth, email, pass, {
-                spotsLiveDate.value = it
+                spotsLiveData.value = it
             },{
                 errorLiveData.value = it
             },{
@@ -72,7 +72,7 @@ class LoginViewModel(private val ctx: Context) : ViewModel() {
         val credential = GoogleAuthProvider.getCredential(account.idToken, null)
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(ctx as Activity) { task->
-                    spotsLiveDate.value = false
+                    spotsLiveData.value = false
 
                     if(task.isSuccessful) {
                         val userId: String = mAuth.currentUser?.uid ?: ""
