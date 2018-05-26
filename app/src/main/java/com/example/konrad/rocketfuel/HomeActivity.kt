@@ -43,6 +43,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         .load(it?.userImage)
                         .into(navView.getHeaderView(0).imagePersonIcon)
         })
+        viewModel.setUserData()
 
         //Add adapter to pageView
         homeViewPager.adapter = MyFragmentAdapter(supportFragmentManager, this)

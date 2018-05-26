@@ -14,7 +14,7 @@ class HomeViewModel : ViewModel() {
 
     fun userModel() = userModelLiveData
 
-    fun setUserData() : MutableLiveData<UserDataModel> {
+    fun setUserData() {
         mDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(error: DatabaseError?) {
                 println(error?.message)
@@ -32,15 +32,7 @@ class HomeViewModel : ViewModel() {
                 userModelLiveData.value = UserDataModel(userName, userEmail, userImage)
             }
         })
-        return userModelLiveData
     }
-
-    fun getUserDataModel(): UserDataModel? = userModelLiveData.value ?: setUserData().value
-//        if (userModelLiveData.value == null)
-//            setUserData()
-//        else
-//            userModelLiveData.value
-//
 
     fun signOut() {
         mAuth.signOut()
