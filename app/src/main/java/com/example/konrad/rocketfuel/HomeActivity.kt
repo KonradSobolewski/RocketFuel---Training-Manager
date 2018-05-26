@@ -1,5 +1,7 @@
 package com.example.konrad.rocketfuel
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.GradientDrawable
@@ -15,30 +17,32 @@ import android.view.View
 import android.widget.LinearLayout
 import com.example.konrad.rocketfuel.Adapters.MyFragmentAdapter
 import com.example.konrad.rocketfuel.R.id.scan
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.example.konrad.rocketfuel.ViewModels.HomeViewModel
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.app_bar_home.*
 import kotlinx.android.synthetic.main.content_home.*
 import kotlinx.android.synthetic.main.nav_header_home.view.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import com.squareup.picasso.Picasso
-import me.dm7.barcodescanner.zxing.ZXingScannerView
 
 class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-
-    private val mDatabase: DatabaseReference = FirebaseDatabase.getInstance().reference
-    private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
-
-    private var userName: String = ""
-    private var userEmail: String = ""
-    private var userImage: String = ""
-
+    private lateinit var viewModel : HomeViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
         setSupportActionBar(toolbar)
+
+        viewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
+        viewModel.userModel().observe(this, Observer {
+            navView.setNavigationItemSelectedListener(this)
+            navView.getHeaderView(0).navbarHeaderID.text = it?.userName
+            navView.getHeaderView(0).navbarEmailID.text = it?.userEmail
+            if (it?.userImage != "")
+                Picasso.with(applicationContext)
+                        .load(it?.userImage)
+                        .into(navView.getHeaderView(0).imagePersonIcon)
+        })
 
         //Add adapter to pageView
         homeViewPager.adapter = MyFragmentAdapter(supportFragmentManager, this)
@@ -63,31 +67,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
-        navView.setNavigationItemSelectedListener(this)
 
-        val usersReference = mDatabase.child("Users")
-        usersReference?.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onCancelled(error: DatabaseError?) {
-                println(error?.message)
-            }
-
-            override fun onDataChange(snapshot: DataSnapshot?) {
-                val userUid = mAuth.currentUser?.uid ?: ""
-                if (snapshot?.hasChild(userUid) != true)
-                    return
-                val currentUserSnapshot: DataSnapshot = snapshot.child(userUid)
-                userName = currentUserSnapshot.child("Name").value.toString() + " " +
-                        currentUserSnapshot.child("Surname").value.toString()
-                userEmail = currentUserSnapshot.child("Email").value.toString()
-                userImage = currentUserSnapshot.child("Image").value.toString()
-                navView.getHeaderView(0).navbarHeaderID.text = userName
-                navView.getHeaderView(0).navbarEmailID.text = userEmail
-                if (userImage != "")
-                    Picasso.with(applicationContext)
-                            .load(userImage)
-                            .into(navView.getHeaderView(0).imagePersonIcon)
-            }
-        })
     }
 
     override fun onBackPressed() {
@@ -144,7 +124,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun signOut(): Boolean {
-        FirebaseAuth.getInstance().signOut()
+        viewModel.signOut()
         startActivity(Intent(this@HomeActivity, LoginActivity::class.java))
         finish()
         return true
