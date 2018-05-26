@@ -1,7 +1,7 @@
-package com.example.konrad.rocketfuel
+package com.example.konrad.rocketfuel.Models
 
 
-class CategoryItem (
+data class CategoryItem (
         val title: String ="Database error",
         val description: String ="Database error",
         val image: String ="Database error"

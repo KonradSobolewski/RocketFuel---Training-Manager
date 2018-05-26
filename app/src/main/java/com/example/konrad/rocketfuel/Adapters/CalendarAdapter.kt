@@ -5,7 +5,7 @@ import android.app.AlertDialog
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import com.example.konrad.rocketfuel.CalendarItem
+import com.example.konrad.rocketfuel.Models.CalendarItem
 import com.example.konrad.rocketfuel.R
 import com.example.konrad.rocketfuel.ViewHolder.CalenderViewHolder
 

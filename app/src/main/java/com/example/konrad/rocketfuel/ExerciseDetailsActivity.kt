@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.example.konrad.rocketfuel.Models.ExerciseItem
 import com.example.konrad.rocketfuel.ViewHolder.ExerciseViewHolder
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
@@ -45,7 +46,7 @@ class ExerciseDetailsActivity : AppCompatActivity() {
     private fun logRecycleView() {
 
         val options = FirebaseRecyclerOptions.Builder<ExerciseItem>()
-                .setQuery(mDatabaseReference,ExerciseItem::class.java)
+                .setQuery(mDatabaseReference, ExerciseItem::class.java)
                 .build()
 
         val mAdapter = object : FirebaseRecyclerAdapter<ExerciseItem, ExerciseViewHolder>(options) {

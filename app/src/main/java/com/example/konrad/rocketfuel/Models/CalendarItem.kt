@@ -1,10 +1,10 @@
-package com.example.konrad.rocketfuel
+package com.example.konrad.rocketfuel.Models
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-class CalendarItem(
+data class CalendarItem(
         val title : String = "Error",
         val day : String = "Error",
         val month : String = "Error",

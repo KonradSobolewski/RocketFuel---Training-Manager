@@ -8,6 +8,7 @@ import android.graphics.drawable.ColorDrawable
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import com.example.konrad.rocketfuel.Models.CalendarItem
 import kotlinx.android.synthetic.main.activity_event_calender.*
 import java.util.*
 
