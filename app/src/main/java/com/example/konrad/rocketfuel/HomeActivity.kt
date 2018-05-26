@@ -14,6 +14,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
 import com.example.konrad.rocketfuel.Adapters.MyFragmentAdapter
+import com.example.konrad.rocketfuel.R.id.scan
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_home.*
@@ -22,6 +23,7 @@ import kotlinx.android.synthetic.main.content_home.*
 import kotlinx.android.synthetic.main.nav_header_home.view.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import com.squareup.picasso.Picasso
+import me.dm7.barcodescanner.zxing.ZXingScannerView
 
 class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -31,6 +33,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var userName: String = ""
     private var userEmail: String = ""
     private var userImage: String = ""
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,12 +107,15 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return true
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when(item.itemId) {
+        scan -> {
+            startActivity(Intent(this, QRcode::class.java
+                ))
+            true
+        }
+        else -> false
     }
+
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
