@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity
 import com.example.konrad.rocketfuel.Utilities.SpotsDialogHandler
 import com.example.konrad.rocketfuel.Utilities.ToastMessageHandler
 import com.example.konrad.rocketfuel.ViewModels.LoginViewModel
+import com.example.konrad.rocketfuel.ViewModels.ViewModelFactory
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
 import kotlinx.android.synthetic.main.activity_login.*

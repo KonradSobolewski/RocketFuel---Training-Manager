@@ -1,10 +1,8 @@
-package com.example.konrad.rocketfuel
+package com.example.konrad.rocketfuel.ViewModels
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import android.content.Context
-import com.example.konrad.rocketfuel.ViewModels.LoginViewModel
-import com.example.konrad.rocketfuel.ViewModels.RegisterViewModel
 
 
 class ViewModelFactory(val context: Context, val type: String) : ViewModelProvider.NewInstanceFactory() {

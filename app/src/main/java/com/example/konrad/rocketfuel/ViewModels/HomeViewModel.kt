@@ -2,12 +2,13 @@ package com.example.konrad.rocketfuel.ViewModels
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import android.util.Log
 import com.example.konrad.rocketfuel.Models.UserDataModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
 class HomeViewModel : ViewModel() {
-    val mDatabase: DatabaseReference = FirebaseDatabase.getInstance().reference.child("Users")
+    private val mDatabase: DatabaseReference = FirebaseDatabase.getInstance().reference.child("Users")
     val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
     val userModelLiveData = MutableLiveData<UserDataModel>()

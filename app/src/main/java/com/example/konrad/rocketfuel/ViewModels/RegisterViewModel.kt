@@ -46,11 +46,9 @@ class RegisterViewModel(private val context: Context) : ViewModel() {
             registerModel.register(context, mAuth, dbRef, userName, userSurname, email, pass,
                     {
                         spotsLiveData.value = it
-                    },
-                    {
+                    }, {
                         messageLiveData.value = it
-                    },
-                    {
+                    }, {
                         messageLiveData.value = context.getString(R.string.verification_email)
                         activityResultLiveData.value = Activity.RESULT_OK
                     })

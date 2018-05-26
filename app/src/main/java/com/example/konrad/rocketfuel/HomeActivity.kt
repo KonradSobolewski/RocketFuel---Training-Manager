@@ -67,8 +67,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         )
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
-
-
     }
 
     override fun onBackPressed() {
@@ -80,23 +78,17 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.home, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when(item.itemId) {
-        scan -> {
-            startActivity(Intent(this, QRcode::class.java
-                ))
+        scan -> { startActivity(Intent(this, QRcode::class.java))
             true
         }
         else -> false
     }
-
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -119,7 +111,6 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 signOut()
             }
         }
-
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }

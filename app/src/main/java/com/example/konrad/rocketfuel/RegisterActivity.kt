@@ -1,7 +1,5 @@
 package com.example.konrad.rocketfuel
 
-import android.app.Activity
-import android.app.Instrumentation
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
@@ -9,11 +7,10 @@ import android.content.Intent
 import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.widget.Toast
 import com.example.konrad.rocketfuel.Utilities.SpotsDialogHandler
 import com.example.konrad.rocketfuel.Utilities.ToastMessageHandler
 import com.example.konrad.rocketfuel.ViewModels.RegisterViewModel
-import dmax.dialog.SpotsDialog
+import com.example.konrad.rocketfuel.ViewModels.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_register.*
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
