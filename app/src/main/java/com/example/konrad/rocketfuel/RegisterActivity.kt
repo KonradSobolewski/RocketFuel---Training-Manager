@@ -47,9 +47,11 @@ class RegisterActivity : AppCompatActivity() {
                     registerConfirmPasswordTxt.text.toString())
         })
 
-        animationDrawable.setEnterFadeDuration(4500)
-        animationDrawable.setExitFadeDuration(4500)
-        animationDrawable.start()
+        animationDrawable.run {
+            setEnterFadeDuration(4500)
+            setExitFadeDuration(4500)
+            start()
+        }
     }
 
     override fun attachBaseContext(newBase: Context) {
