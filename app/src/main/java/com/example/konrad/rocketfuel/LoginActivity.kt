@@ -31,6 +31,7 @@ class LoginActivity : AppCompatActivity() {
     private val spotsDialog: SpotsDialog by lazy {
         SpotsDialog(this, R.style.DialogStyleLog)
     }
+    
     private lateinit var viewModel : LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +40,7 @@ class LoginActivity : AppCompatActivity() {
 
         viewModel = ViewModelProviders.of(this, LoginViewModelFactory(this)).get(LoginViewModel::class.java)
         viewModel.error().observe(this, Observer(this::showToastMessage))
-        viewModel.spotsGetter().observe(this, Observer(this::spotsSetter))
+        viewModel.spotsGetter().observe(this, Observer(this::showSpots))
         viewModel.startNewActivity().observe(this, Observer(this::startHomeActivity))
 
 
@@ -75,7 +76,7 @@ class LoginActivity : AppCompatActivity() {
                 val account = task.getResult(ApiException::class.java)
                 viewModel.firebaseAuthWithGoogle(account,this)
             } catch (e: ApiException) {
-                spotsSetter(false)
+                showSpots(false)
             }
         }
         else if(requestCode == REGISTER_KEY && resultCode == Activity.RESULT_OK)
@@ -97,16 +98,19 @@ class LoginActivity : AppCompatActivity() {
             finish()
         }
     }
-    private fun spotsSetter(state: Boolean?) {
+
+    private fun showSpots(state: Boolean?) {
         if(state == true)
             spotsDialog.show()
         else
             spotsDialog.dismiss()
 
     }
+
     private fun showToastMessage(message: String?) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
+
     private fun login(email: String, pass: String) {
         viewModel.login(email,pass,this)
     }
