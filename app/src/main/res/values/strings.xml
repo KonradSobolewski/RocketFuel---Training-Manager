@@ -50,5 +50,13 @@
     <string name="verification_email">Verification email sent</string>
     <string name="acc_creation_failed">Account creating failed</string>
     <string name="register_succeeded">Register succeeded</string>
+    <string name="qr_scanner">QR code</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="perGranted">Permission Granted</string>
+    <string name="perNotGranted">Permission Denied</string>
+    <string name="allowPer">You need to allow access to both the permissions</string>
+    <string name="scanResult">Scan Result</string>
+    <string name="visit">Visit</string>
 
 </resources>
