@@ -16,6 +16,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.LinearLayout
 import com.example.konrad.rocketfuel.Adapters.MyFragmentAdapter
+import com.example.konrad.rocketfuel.Models.UserDataModel
 import com.example.konrad.rocketfuel.R.id.scan
 import com.example.konrad.rocketfuel.ViewModels.HomeViewModel
 import kotlinx.android.synthetic.main.activity_home.*
@@ -34,6 +35,7 @@ class HomeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setSupportActionBar(toolbar)
 
         viewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
+        viewModel.userModel().value = UserDataModel()
         viewModel.userModel().observe(this, Observer {
             navView.setNavigationItemSelectedListener(this)
             navView.getHeaderView(0).navbarHeaderID.text = it?.userName

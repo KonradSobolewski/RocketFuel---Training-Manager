@@ -72,7 +72,6 @@ class LoginViewModel(private val ctx: Context) : ViewModel() {
         val credential = GoogleAuthProvider.getCredential(account.idToken, null)
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(ctx as Activity) { task->
-                    spotsLiveData.value = false
 
                     if(task.isSuccessful) {
                         val userId: String = mAuth.currentUser?.uid ?: ""
@@ -80,6 +79,7 @@ class LoginViewModel(private val ctx: Context) : ViewModel() {
                         dbRef.addValueEventListener(object : ValueEventListener {
                             override fun onCancelled(p0: DatabaseError?) {
                                 Log.e("Logout", "error!")
+                                spotsLiveData.value = false
                             }
 
                             override fun onDataChange(p0: DataSnapshot?) {
@@ -96,12 +96,15 @@ class LoginViewModel(private val ctx: Context) : ViewModel() {
                                             child("Image")?.setValue(personImg)
                                             push()
                                         }
+
                                     }
                                 }
                             }
                         })
+                        spotsLiveData.value = false
                         newActivity.value = true
                     } else {
+                        spotsLiveData.value = false
                         errorLiveData.value = ctx.getString(R.string.connection_error)
                     }
                 }

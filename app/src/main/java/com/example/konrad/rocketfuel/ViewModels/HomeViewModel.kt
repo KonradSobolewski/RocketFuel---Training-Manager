@@ -16,6 +16,7 @@ class HomeViewModel : ViewModel() {
     fun userModel() = userModelLiveData
 
     fun setUserData() {
+
         mDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(error: DatabaseError?) {
                 println(error?.message)
